@@ -4,7 +4,6 @@ import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import ssl
 import os
-import time
 
 import finale_launcher
 from makecert import CertManager
@@ -38,8 +37,6 @@ def create_wrapper(host):
         httpsd.socket=ssl.wrap_socket(httpsd.socket,certfile=ssl_config.ca_pem_file,server_side=True)
     else:
         sslcontext = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
-        #sslcontext.verify_mode = ssl.CERT_REQUIRED
-        sslcontext.load_verify_locations(ssl_config.ca_pem_file)
         sslcontext.load_cert_chain(
             os.path.join(ssl_config.key_dir,fdomain+'.crt'),
             keyfile=os.path.join(ssl_config.key_dir,fdomain+'.key')
