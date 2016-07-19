@@ -3,6 +3,8 @@ An INEFFICIENT and INSECURE python HTTP(S) proxy
 
 ![tirofinale](https://cloud.githubusercontent.com/assets/6646473/16940706/251b6fde-4dbe-11e6-9a1c-701e45aeb630.png)
 
+[Official](http://bangumi.bilibili.com/anime/2539) Pronounciation: **踢咯，飞那里！**
+
 ## Server(`finale`) Setup
 
 1. `cd finale`
@@ -20,6 +22,10 @@ An INEFFICIENT and INSECURE python HTTP(S) proxy
 
 ## Todo-List
 
-- Add GUI support for `tiro`
-- Fix the `Content-Length` related bug
-- Improve efficiency
+- [ ] Add GUI support for `tiro`
+- [ ] Fix the `Content-Length` related bug
+- [ ] Improve efficiency
+- [ ] Add `GFWList` support
+- [ ] Use wildcard SSL certificate if possible
+- [ ] Network error handling and retransmission
+- [ ] Showing statistics
