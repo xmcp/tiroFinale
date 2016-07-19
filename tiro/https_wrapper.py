@@ -24,6 +24,9 @@ class MyHandler(BaseHTTPRequestHandler):
     do_PATCH=do_GET
     do_PUT=do_GET
     
+    def log_message(self,*_):
+        pass #default server log
+    
 cache={}
 def create_wrapper(host):
     if host in cache:

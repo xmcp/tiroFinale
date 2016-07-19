@@ -2,6 +2,7 @@
 #based on https://github.com/senko/tornado-proxy
 
 import socket
+import threading
 
 import tornado.httpserver
 import tornado.ioloop
@@ -42,8 +43,6 @@ class ProxyHandler(tornado.web.RequestHandler):
             self.finish()
 
         body = self.request.body
-        if not body:
-            body = None
         try:
             if 'Proxy-Connection' in self.request.headers:
                 del self.request.headers['Proxy-Connection']
@@ -96,7 +95,7 @@ class ProxyHandler(tornado.web.RequestHandler):
         upstream = tornado.iostream.IOStream(s)
 
         upstream.connect(('127.0.0.1', https_wrapper.create_wrapper(host)), start_tunnel)
-
+         
 def run_proxy():
     app = tornado.web.Application([
         (r'.*', ProxyHandler),

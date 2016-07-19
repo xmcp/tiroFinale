@@ -5,6 +5,7 @@ from contextlib import closing
 import tornado.httputil
 import base64
 
+import threading
 import json
 
 CHUNKSIZE = 64*1024
@@ -12,12 +13,15 @@ FINALE_URL = 'http://127.0.0.1:4446/finale'
 TIMEOUT = 30
 PASSWORD = 'rdfzyjy'
 API_VERSION = 'APIv2'
+POOLSIZE = 100
 
 s=requests.Session()
 s.trust_env=False #disable original proxy
+thread_adapter=requests.adapters.HTTPAdapter(pool_connections=POOLSIZE, pool_maxsize=POOLSIZE)
+s.mount('http://',thread_adapter)
+
 def _finale_request(method, url, headers, body):
     print('tiro: %s %s'%(method,url))
-
     res=s.post(
         FINALE_URL,
         params={'api':API_VERSION},
@@ -32,7 +36,7 @@ def _finale_request(method, url, headers, body):
         stream=True,allow_redirects=False,timeout=TIMEOUT
     )
 
-    if res.reason=='Finale Itself OK':
+    if res.status_code==200:
         res.status_code=int(res.headers['X-Finale-Status'])
         res.reason=res.headers['X-Finale-Reason']
         res.headers=json.loads(res.headers['X-Finale-Headers'])
@@ -42,6 +46,12 @@ def _finale_request(method, url, headers, body):
     print('tiro: [%d] %s'%(res.status_code,url))
     return closing(res)
 
+def _async(f):
+    def _real(*__,**_):
+        threading.Thread(target=f,args=__,kwargs=_).start()
+    return _real
+
+@_async
 def tornado_fetcher(responder, method, url, headers, body):
     try:
         with _finale_request(method,url,headers,body) as res:
