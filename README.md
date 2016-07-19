@@ -1,24 +1,28 @@
 # tiroFinale
 An INEFFICIENT and INSECURE python HTTP(S) proxy
 
+The client-side program `tiro` requires OpenSSL and Python 3.x, and supports at least Windows and Linux.
+
+The server-side program `finale` requires Python 3.x, and supports at least [heroku](http://heroku.com) and MS Azure Web App.
+
 ![tirofinale](https://cloud.githubusercontent.com/assets/6646473/16940706/251b6fde-4dbe-11e6-9a1c-701e45aeb630.png)
 
 [Official](http://bangumi.bilibili.com/anime/2539) Pronounciation: **踢咯，飞那里！**
 
-## Server(`finale`) Setup
+## Server (`finale`) Setup
 
-1. `cd finale`
+1. Clone the repository, then `cd finale`
 2. `python3 -m pip install -r requirements.txt`
-3. `vi finale.py` and fill in your PASSWORD and PORT
-4. `python3 ./finaly.py`
+3. `vi finale.py` and fill in your server's PASSWORD and PORT
+4. `python3 ./finale.py`
 
-## Client(`tiro`) Setup
+## Client (`tiro`) Setup
 
-1. `cd tiro`
+1. Clone the repository, then `cd tiro`
 2. `python3 -m pip install -r requirements.txt`
-3. `vi ssl_config.py` and fill in your OpenSSH executable path
-4. `vi finale_launcher.py` and fill in the server's FINALE_URL and PASSWORD 
-4. `python3 ./tiro_proxy.py`
+3. `vi ssl_config.py` and fill in your OpenSSH executable path (on Linux, just fill in `openssh`)
+4. `vi finale_launcher.py` and fill in FINALE_URL and its PASSWORD
+5. `python3 ./tiro_proxy.py`
 
 ## Todo-List
 
