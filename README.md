@@ -1,5 +1,5 @@
 # tiroFinale
-An INEFFICIENT and INSECURE python HTTP(S) proxy
+An <del>*INEFFICIENT*</del> (improved) and *INSECURE* python HTTP(S) proxy
 
 The client-side program `tiro` requires OpenSSL and Python 3.x, and supports at least Windows and Linux.
 
