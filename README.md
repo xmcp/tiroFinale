@@ -31,7 +31,7 @@ Using tiroFinale proxy from localhost: *LOAD: 4.95s*
 
 1. Clone the repository, then `cd tiro`
 2. `python3 -m pip install -r requirements.txt`
-3. `vi ssl_config.py` and fill in your OpenSSH executable path (on Linux, just fill in `openssh`)
+3. `vi ssl_config.py` and fill in your OpenSSL executable path (on Linux, just fill in `openssl`)
 4. `vi finale_launcher.py` and fill in FINALE_URL and its PASSWORD
 5. `python3 ./tiro_proxy.py`
 
