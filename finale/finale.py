@@ -1,4 +1,5 @@
 #coding=utf-8
+import json
 
 import requests
 import cherrypy
@@ -8,11 +9,17 @@ import os
 PORT=int(os.environ.get('PORT',4446))
 CHUNKSIZE=64*1024
 PASSWORD='rdfzyjy'
+API_VERSION='APIv2'
 
 class Website:
     @cherrypy.expose()
     @cherrypy.tools.json_in()
-    def finale(self):
+    def finale(self,api='APIv1'):
+        if api!=API_VERSION:
+            cherrypy.response.status='400 Tiro Version Mismatch'
+            cherrypy.response.headers['Content-Type']='text/plain'
+            return 'Finale Error: You are running tiroFinale %s while this server is running %s.'%(api,API_VERSION)
+
         if cherrypy.request.json['auth']!=PASSWORD:
             cherrypy.response.status='401 Finale Password Incorrect'
             cherrypy.response.headers['Content-Type']='text/plain'
@@ -38,13 +45,19 @@ class Website:
             return 'Finale Error: Request failed. %s %s'%(type(e),e)
 
         print('finale: [OK] %s'%cherrypy.request.json['url'])
+
         def extract():
             yield from res.raw.stream(CHUNKSIZE,decode_content=False)
+        def addheader(k):
+            if k in res.headers:
+                cherrypy.response.headers[k]=res.headers[k]
 
-        #todo: store all data in response body
-        cherrypy.response.status='%d %s'%(res.status_code,res.reason)
-        for k,v in res.headers.items():
-            cherrypy.response.headers[k]=v
+        cherrypy.response.status='200 Finale Itself OK'
+        addheader('Content-Length')
+        addheader('Content-Encoding')
+        cherrypy.response.headers['X-Finale-Status']=res.status_code
+        cherrypy.response.headers['X-Finale-Reason']=res.reason
+        cherrypy.response.headers['X-Finale-Headers']=json.dumps(dict(res.headers))
         return extract()
 
 cherrypy.quickstart(Website(),'/',{

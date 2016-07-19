@@ -30,11 +30,9 @@ def popen_fulloutput(output):
 #from tlsmanager.py
 
 class CertManager(object):
-    OPENSSL_NEWKEY_FORMAT = '{4} req -new -config {0} -keyform PEM -keyout {1} -outform PEM -out {2} -nodes -newkey rsa:2048 -subj {3}'
-    OPENSSL_CASIGN_FORMAT = '{6} x509 -CA {0} -CAkey {1} -CAserial {2} -req -in {3} -outform PEM -out {4} -days {5}'
-    # OPENSSL_SUBJECT_FORMAT = '\'/C={0}/ST={1}/L={2}/O={3}/OU={4}/CN={5}/emailAddress={6}/subjectAltName=DNS.1={5}\''
-    # ↓http://stackoverflow.com/questions/31506158/running-openssl-from-a-bash-script-on-windows-subject-does-not-start-with
-    OPENSSL_SUBJECT_FORMAT = r'"//C={0}\ST={1}\L={2}\O={3}\OU={4}\CN={5}\emailAddress={6}\subjectAltName=DNS.1={5}"'
+    OPENSSL_NEWKEY_FORMAT = '{4} req  -new -config {0} -keyform PEM -keyout {1} -outform PEM -out {2} -nodes -newkey 1024 -subj {3}'
+    OPENSSL_CASIGN_FORMAT = '{6} x509 -CA {0} -CAkey {1} -CAserial {2} -req -sha256 -in {3} -outform PEM -out {4} -days {5}'
+    OPENSSL_SUBJECT_FORMAT = '"/C={0}/ST={1}/L={2}/O={3}/OU={4}/CN={5}/emailAddress={6}/subjectAltName=DNS.1={5}"'
 
     def __init__(self, *args, **kwargs):
         self.key_dir = self.normpath(conf.key_dir)
@@ -80,7 +78,7 @@ class CertManager(object):
         if not self.check_cert(domain):
             self.cleanup(domain)
 
-        print('ssl: generate new cert for {0}'.format(domain))
+        print('ssl: generating new cert for {0}'.format(domain))
         ssl_subj = self.OPENSSL_SUBJECT_FORMAT.format(
             conf.subj_country,
             conf.subj_state,

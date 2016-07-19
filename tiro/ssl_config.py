@@ -1,6 +1,6 @@
 #coding=utf-8
 
-openssl_bin=r'"C:/Program Files/Git/mingw32/bin/openssl.exe"'
+openssl_bin=r'"C:/Program Files (x86)/Git/bin/openssl.exe"'
 validity_days=365
 key_dir='_generated_keys'
 

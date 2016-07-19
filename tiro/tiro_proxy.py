@@ -1,8 +1,6 @@
 #coding=utf-8
 
-import logging
 import socket
-import threading
 
 import tornado.httpserver
 import tornado.ioloop
@@ -14,7 +12,6 @@ import tornado.httputil
 import https_wrapper
 import finale_launcher
 
-logger = logging.getLogger('tornado_proxy')
 PORT = 888
 
 class ProxyHandler(tornado.web.RequestHandler):
@@ -25,9 +22,6 @@ class ProxyHandler(tornado.web.RequestHandler):
 
     @tornado.web.asynchronous
     def get(self):
-        logger.debug('Handle %s request to %s', self.request.method,
-                     self.request.uri)
-
         def handle_response(response):
             if (response.error and not
                     isinstance(response.error, tornado.httpclient.HTTPError)):
@@ -75,7 +69,6 @@ class ProxyHandler(tornado.web.RequestHandler):
 
     @tornado.web.asynchronous
     def connect(self):
-        logger.debug('Start CONNECT to %s', self.request.uri)
         host, port = self.request.uri.split(':')
         client = self.request.connection.stream
 
@@ -94,7 +87,6 @@ class ProxyHandler(tornado.web.RequestHandler):
             client.close()
 
         def start_tunnel():
-            logger.debug('CONNECT tunnel established to %s', self.request.uri)
             client.read_until_close(client_close, upstream.write)
             upstream.read_until_close(upstream_close, client.write)
             client.write(b'HTTP/1.0 200 Connection established\r\n\r\n')

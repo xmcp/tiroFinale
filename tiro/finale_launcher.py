@@ -5,17 +5,22 @@ from contextlib import closing
 import tornado.httputil
 import base64
 
+import json
+
 CHUNKSIZE = 64*1024
 FINALE_URL = 'http://127.0.0.1:4446/finale'
 TIMEOUT = 10
 PASSWORD = 'rdfzyjy'
+API_VERSION = 'APIv2'
 
 def _finale_request(method, url, headers, body):
     print('tiro: %s %s'%(method,url))
+
     s=requests.Session()
     s.trust_env=False #disable original proxy
-    return closing(s.post(
+    res=s.post(
         FINALE_URL,
+        params={'api':API_VERSION},
         json={
             'auth': PASSWORD,
             'method': method,
@@ -25,7 +30,17 @@ def _finale_request(method, url, headers, body):
             'timeout': TIMEOUT
         },
         stream=True,allow_redirects=False,timeout=TIMEOUT
-    ))
+    )
+
+    if 'X-Finale-Status' in res.headers:
+        res.status_code=int(res.headers['X-Finale-Status'])
+    if 'X-Finale-Reason' in res.headers:
+        res.reason=res.headers['X-Finale-Reason']
+    if 'X-Finale-Headers' in res.headers:
+        res.headers=json.loads(res.headers['X-Finale-Headers'])
+
+    print('tiro: [%d] %s'%(res.status_code,url))
+    return closing(res)
 
 def tornado_fetcher(responder, method, url, headers, body):
     try:
