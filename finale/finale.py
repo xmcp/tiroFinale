@@ -18,19 +18,26 @@ class Website:
             cherrypy.response.headers['Content-Type']='text/plain'
             return 'Finale Error: Your Password for tiroFinale is Incorrect'
 
+        print('finale: %s %s'%(cherrypy.request.json['method'],cherrypy.request.json['url']))
         s=requests.Session()
         s.trust_env=False
-        res=s.request(
-            cherrypy.request.json['method'],
-            cherrypy.request.json['url'],
-            headers=cherrypy.request.json['headers'],
-            data=base64.b64decode(cherrypy.request.json['data'].encode()),
-            stream=True,
-            allow_redirects=False,
-            timeout=cherrypy.request.json['timeout'],
-            verify=False,
-        )
+        try:
+            res=s.request(
+                cherrypy.request.json['method'],
+                cherrypy.request.json['url'],
+                headers=cherrypy.request.json['headers'],
+                data=base64.b64decode(cherrypy.request.json['data'].encode()),
+                stream=True,
+                allow_redirects=False,
+                timeout=cherrypy.request.json['timeout'],
+                verify=False,
+            )
+        except Exception as e:
+            cherrypy.response.status='504 Finale Connection Failed'
+            cherrypy.response.headers['Content-Type']='text/plain'
+            return 'Finale Error: Request failed. %s %s'%(type(e),e)
 
+        print('finale: [OK] %s'%cherrypy.request.json['url'])
         def extract():
             yield from res.raw.stream(CHUNKSIZE,decode_content=False)
 

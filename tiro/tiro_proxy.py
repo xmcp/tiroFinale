@@ -19,7 +19,7 @@ PORT = 888
 
 class ProxyHandler(tornado.web.RequestHandler):
     SUPPORTED_METHODS = ['GET', 'POST', 'HEAD', 'DELETE', 'PATCH', 'PUT', 'CONNECT']
-    
+
     def compute_etag(self):
         return None # disable tornado Etag
 
@@ -36,12 +36,12 @@ class ProxyHandler(tornado.web.RequestHandler):
             else:
                 self.set_status(response.code, response.reason)
                 self._headers = tornado.httputil.HTTPHeaders() # clear tornado default header
-                
+
                 for header, v in response.headers.get_all():
                     if header not in ('Content-Length', 'Transfer-Encoding', 'Content-Encoding', 'Connection'):
                         self.add_header(header, v) # some header appear multiple times, eg 'Set-Cookie'
-                
-                if response.body:                   
+
+                if response.body:
                     self.set_header('Content-Length', len(response.body))
                     self.write(response.body)
             self.finish()
@@ -79,12 +79,6 @@ class ProxyHandler(tornado.web.RequestHandler):
         host, port = self.request.uri.split(':')
         client = self.request.connection.stream
 
-        def read_from_client(data):
-            upstream.write(data)
-
-        def read_from_upstream(data):
-            client.write(data)
-
         def client_close(data=None):
             if upstream.closed():
                 return
@@ -101,14 +95,14 @@ class ProxyHandler(tornado.web.RequestHandler):
 
         def start_tunnel():
             logger.debug('CONNECT tunnel established to %s', self.request.uri)
-            client.read_until_close(client_close, read_from_client)
-            upstream.read_until_close(upstream_close, read_from_upstream)
+            client.read_until_close(client_close, upstream.write)
+            upstream.read_until_close(upstream_close, client.write)
             client.write(b'HTTP/1.0 200 Connection established\r\n\r\n')
 
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
         upstream = tornado.iostream.IOStream(s)
 
-        upstream.connect(('127.0.0.1', https_wrapper.HTTPS_PORT), start_tunnel)
+        upstream.connect(('127.0.0.1', https_wrapper.create_wrapper(host)), start_tunnel)
 
 def run_proxy():
     app = tornado.web.Application([
@@ -119,7 +113,5 @@ def run_proxy():
     ioloop.start()
 
 if __name__ == '__main__':
-    print('Starting HTTPS wrapper on port %d' % https_wrapper.HTTPS_PORT)
-    threading.Thread(target=https_wrapper.run).start()
     print("Starting HTTP proxy on port %d" % PORT)
     run_proxy()

@@ -3,10 +3,12 @@ import socketserver
 import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import ssl
+import os
+import time
 
 import finale_launcher
-
-HTTPS_PORT = 4443
+from makecert import CertManager
+import ssl_config
 
 class MultithreadServer(socketserver.ThreadingMixIn, HTTPServer):
     pass
@@ -23,7 +25,30 @@ class MyHandler(BaseHTTPRequestHandler):
     do_PATCH=do_GET
     do_PUT=do_GET
 
-def run():
-    httpsd = MultithreadServer(('127.0.0.1', HTTPS_PORT), MyHandler)
-    httpsd.socket = ssl.wrap_socket(httpsd.socket, certfile='./key.pem', server_side=True)
+cache={}
+def create_wrapper(host):
+    if host in cache:
+        return cache[host]
+
+    ssl_check, fdomain = CertManager().generate(host)
+    httpsd = MultithreadServer(('127.0.0.1', 0), MyHandler)
+
+    if not ssl_check:
+        print('https_wrapper: gen cert failed. using CA instead.')
+        httpsd.socket=ssl.wrap_socket(httpsd.socket,certfile=ssl_config.ca_pem_file,server_side=True)
+    else:
+        sslcontext = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+        #sslcontext.verify_mode = ssl.CERT_REQUIRED
+        sslcontext.load_verify_locations(ssl_config.ca_pem_file)
+        sslcontext.load_cert_chain(
+            os.path.join(ssl_config.key_dir,fdomain+'.crt'),
+            keyfile=os.path.join(ssl_config.key_dir,fdomain+'.key')
+        )
+        httpsd.socket=sslcontext.wrap_socket(httpsd.socket,server_side=True)
+
+    port = httpsd.socket.getsockname()[1]
     threading.Thread(target=httpsd.serve_forever).start()
+
+    print('https_wrapper: wrapping %s on port %d'%(host,port))
+    cache[host]=port
+    return port
