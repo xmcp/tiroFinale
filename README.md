@@ -9,6 +9,17 @@ The server-side program `finale` requires Python 3.x, and supports at least [her
 
 [Official](http://bangumi.bilibili.com/anime/2539) Pronounciation: **踢咯，飞那里！**
 
+## Efficiency
+
+Not using tiroFinale proxy: *LOAD: 3.46s*
+
+![before](https://cloud.githubusercontent.com/assets/6646473/16955889/e033fc4c-4e08-11e6-9b18-f00bf75a5f50.png)
+
+Using tiroFinale proxy from localhost: *LOAD: 4.95s*
+
+![after](https://cloud.githubusercontent.com/assets/6646473/16955850/c6c0f666-4e08-11e6-9feb-7fd576c5cf44.png)
+
+
 ## Server (`finale`) Setup
 
 1. Clone the repository, then `cd finale`
@@ -27,8 +38,8 @@ The server-side program `finale` requires Python 3.x, and supports at least [her
 ## Todo-List
 
 - [ ] Add GUI support for `tiro`
-- [ ] Fix the `Content-Length` related bug
-- [ ] Improve efficiency
+- [x] Fix the `Content-Length` related bug
+- [x] Improve efficiency
 - [ ] Add `GFWList` support
 - [ ] Use wildcard SSL certificate if possible
 - [ ] Network error handling and retransmission
