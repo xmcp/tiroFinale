@@ -16,7 +16,7 @@ class MultithreadServer(socketserver.ThreadingMixIn, HTTPServer):
 class MyHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         url='https://%s%s'%(self.headers['Host'], self.path)
-        body=self.rfile.read(self.headers.get('Content-Length',0)) #fixme: post request without content-length
+        body=self.rfile.read(int(self.headers.get('Content-Length',0))) #fixme: post request without content-length
         finale_launcher.base_fetcher(self,self.command,url,self.headers,body)
 
     do_POST=do_GET

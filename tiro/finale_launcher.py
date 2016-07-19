@@ -9,7 +9,7 @@ import json
 
 CHUNKSIZE = 64*1024
 FINALE_URL = 'http://127.0.0.1:4446/finale'
-TIMEOUT = 10
+TIMEOUT = 30
 PASSWORD = 'rdfzyjy'
 API_VERSION = 'APIv2'
 
@@ -32,12 +32,9 @@ def _finale_request(method, url, headers, body):
         stream=True,allow_redirects=False,timeout=TIMEOUT
     )
 
-    if 'X-Finale-Status' in res.headers:
-        res.status_code=int(res.headers['X-Finale-Status'])
-    if 'X-Finale-Reason' in res.headers:
-        res.reason=res.headers['X-Finale-Reason']
-    if 'X-Finale-Headers' in res.headers:
-        res.headers=json.loads(res.headers['X-Finale-Headers'])
+    res.status_code=int(res.headers['X-Finale-Status'])
+    res.reason=res.headers['X-Finale-Reason']
+    res.headers=json.loads(res.headers['X-Finale-Headers'])
 
     print('tiro: [%d] %s'%(res.status_code,url))
     return closing(res)
@@ -51,7 +48,7 @@ def tornado_fetcher(responder, method, url, headers, body):
                 if k.lower() not in ['connection','transfer-encoding']:
                     responder.add_header(k, v)
             for content in res.raw.stream(CHUNKSIZE,decode_content=False):
-                responder.write(content)
+                responder.write(content) #fixme: "Tried to write more data than Content-Length"
             responder.finish()
     except Exception as e:
         responder.set_status(504,'tiroFinale Error')
