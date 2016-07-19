@@ -6,6 +6,8 @@ import cherrypy
 import base64
 import os
 
+requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
+
 PORT=int(os.environ.get('PORT',4446))
 CHUNKSIZE=64*1024
 PASSWORD='rdfzyjy'
@@ -62,11 +64,12 @@ class Website:
 
 cherrypy.quickstart(Website(),'/',{
     'global': {
+        'environment': 'production',
         'server.socket_host':'0.0.0.0',
         'server.socket_port':PORT,
         'tools.response_headers.on':True,
         'engine.autoreload.on':False,
-        # 'request.show_tracebacks': False,
+        'server.thread_pool': 25,
     },
     '/finale': {
         'response.stream': True

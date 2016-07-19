@@ -23,7 +23,7 @@ class MyHandler(BaseHTTPRequestHandler):
     do_DELETE=do_GET
     do_PATCH=do_GET
     do_PUT=do_GET
-
+    
 cache={}
 def create_wrapper(host):
     if host in cache:
@@ -43,6 +43,7 @@ def create_wrapper(host):
         )
         httpsd.socket=sslcontext.wrap_socket(httpsd.socket,server_side=True)
 
+    httpsd.handle_error=lambda *_: None #suppress annoying "ValueError: I/O operation on closed file"
     port = httpsd.socket.getsockname()[1]
     threading.Thread(target=httpsd.serve_forever).start()
 

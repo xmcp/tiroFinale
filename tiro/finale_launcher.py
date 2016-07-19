@@ -13,11 +13,11 @@ TIMEOUT = 30
 PASSWORD = 'rdfzyjy'
 API_VERSION = 'APIv2'
 
+s=requests.Session()
+s.trust_env=False #disable original proxy
 def _finale_request(method, url, headers, body):
     print('tiro: %s %s'%(method,url))
 
-    s=requests.Session()
-    s.trust_env=False #disable original proxy
     res=s.post(
         FINALE_URL,
         params={'api':API_VERSION},
@@ -32,10 +32,13 @@ def _finale_request(method, url, headers, body):
         stream=True,allow_redirects=False,timeout=TIMEOUT
     )
 
-    res.status_code=int(res.headers['X-Finale-Status'])
-    res.reason=res.headers['X-Finale-Reason']
-    res.headers=json.loads(res.headers['X-Finale-Headers'])
-
+    if res.reason=='Finale Itself OK':
+        res.status_code=int(res.headers['X-Finale-Status'])
+        res.reason=res.headers['X-Finale-Reason']
+        res.headers=json.loads(res.headers['X-Finale-Headers'])
+    else:
+        print('tiro: Finale HTTP %d %s: %s'%(res.status_code,res.reason,url))
+        
     print('tiro: [%d] %s'%(res.status_code,url))
     return closing(res)
 
