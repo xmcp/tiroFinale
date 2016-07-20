@@ -4,4 +4,5 @@ __pycache__/
 /tiro/_generated_keys/
 /tiro/ssl_stuff/serial
 /tiro/openssl/
+/tiro/build/
 /finale/.git/

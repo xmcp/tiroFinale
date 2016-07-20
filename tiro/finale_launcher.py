@@ -7,13 +7,9 @@ import base64
 
 import threading
 import json
-import time
-CHUNKSIZE = 64*1024
-FINALE_URL = 'http://127.0.0.1:4446/finale'
-TIMEOUT = 30
-PASSWORD = 'rdfzyjy'
+
+from const import CHUNKSIZE, FINALE_URL, TIMEOUT, PASSWORD, POOLSIZE
 API_VERSION = 'APIv2'
-POOLSIZE = 100
 
 s=requests.Session()
 s.trust_env=False #disable original proxy
@@ -58,7 +54,7 @@ def tornado_fetcher(ioloop, puthead, putdata, finish, method, url, headers, body
             ioloop.add_callback(puthead,res.status_code,res.reason,res.headers.items())
             for content in res.raw.stream(CHUNKSIZE,decode_content=False):
                 ioloop.add_callback(putdata,content) #fixme: "Tried to write more data than Content-Length"
-            ioloop.add_callback(finish); print('<< DONE >>')
+            ioloop.add_callback(finish)
     except Exception as e:
         ioloop.add_callback(puthead,504,'tiroFinale Error',[('Content-Type','Text/Plain')])
         ioloop.add_callback(putdata,'Exception occured in tiroFinale tornado worker: %s %s'%(type(e),e))

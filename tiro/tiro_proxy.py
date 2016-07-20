@@ -13,7 +13,7 @@ import tornado.httputil
 import https_wrapper
 import finale_launcher
 
-PORT = 888
+from const import PORT
 
 class ProxyHandler(tornado.web.RequestHandler):
     SUPPORTED_METHODS = ['GET', 'POST', 'HEAD', 'DELETE', 'PATCH', 'PUT', 'CONNECT']
