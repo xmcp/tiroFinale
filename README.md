@@ -46,7 +46,14 @@ Using tiroFinale proxy (v2.5) from localhost: *LOAD: 4.95s*
 - [ ] Add GUI support for `tiro`
 - [x] Fix the `Content-Length` related bug
 - [x] Improve efficiency
-- [ ] Add `GFWList` support
+- [x] Add `GFWList` support
 - [x] Use wildcard SSL certificate if possible
 - [ ] Network error handling and retransmission
 - [ ] Showing statistics
+
+## Special thanks to:
+
+- [senko/tornado-proxy](https://github.com/senko/tornado-proxy)
+- [python-simplecacher](https://github.com/Leryan/python-simplecacher)
+- [Leryan/genssl](https://github.com/Leryan/genssl)
+- [CaledoniaProject/GFWList](https://github.com/CaledoniaProject/GFWList)
