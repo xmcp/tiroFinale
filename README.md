@@ -41,6 +41,6 @@ Using tiroFinale proxy from localhost: *LOAD: 4.95s*
 - [x] Fix the `Content-Length` related bug
 - [x] Improve efficiency
 - [ ] Add `GFWList` support
-- [ ] Use wildcard SSL certificate if possible
+- [x] Use wildcard SSL certificate if possible
 - [ ] Network error handling and retransmission
 - [ ] Showing statistics
