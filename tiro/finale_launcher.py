@@ -7,7 +7,7 @@ import base64
 
 import threading
 import json
-
+import time
 CHUNKSIZE = 64*1024
 FINALE_URL = 'http://127.0.0.1:4446/finale'
 TIMEOUT = 30
@@ -36,12 +36,12 @@ def _finale_request(method, url, headers, body):
         stream=True,allow_redirects=False,timeout=TIMEOUT
     )
 
-    if res.status_code==200:
+    if 'X-Finale-Status' in res.headers:
         res.status_code=int(res.headers['X-Finale-Status'])
         res.reason=res.headers['X-Finale-Reason']
         res.headers=json.loads(res.headers['X-Finale-Headers'])
     else:
-        print('tiro: Finale HTTP %d %s: %s'%(res.status_code,res.reason,url))
+        print('tiro: Finale error %d %s: %s'%(res.status_code,res.reason,url))
         
     print('tiro: [%d] %s'%(res.status_code,url))
     return closing(res)
@@ -52,22 +52,17 @@ def _async(f):
     return _real
 
 @_async
-def tornado_fetcher(responder, method, url, headers, body):
+def tornado_fetcher(ioloop, puthead, putdata, finish, method, url, headers, body):
     try:
         with _finale_request(method,url,headers,body) as res:
-            responder.set_status(res.status_code, res.reason)
-            responder._headers = tornado.httputil.HTTPHeaders()
-            for k,v in res.headers.items():
-                if k.lower() not in ['connection','transfer-encoding']:
-                    responder.add_header(k, v)
+            ioloop.add_callback(puthead,res.status_code,res.reason,res.headers.items())
             for content in res.raw.stream(CHUNKSIZE,decode_content=False):
-                responder.write(content) #fixme: "Tried to write more data than Content-Length"
-            responder.finish()
+                ioloop.add_callback(putdata,content) #fixme: "Tried to write more data than Content-Length"
+            ioloop.add_callback(finish); print('<< DONE >>')
     except Exception as e:
-        responder.set_status(504,'tiroFinale Error')
-        responder.add_header('Content-Type','Text/Plain')
-        responder.write('Exception occured in tiroFinale worker: %s %s'%(type(e),e))
-        responder.finish()
+        ioloop.add_callback(puthead,504,'tiroFinale Error',[('Content-Type','Text/Plain')])
+        ioloop.add_callback(putdata,'Exception occured in tiroFinale tornado worker: %s %s'%(type(e),e))
+        ioloop.add_callback(finish)
         raise
 
 def base_fetcher(responder, method, url, headers, body):
@@ -85,6 +80,6 @@ def base_fetcher(responder, method, url, headers, body):
         responder.send_response(504,'tiroFinale Error')
         responder.send_header('Content-Type','Text/Plain')
         responder.end_headers()
-        responder.wfile.write(('Exception occured in tiroFinale worker: %s %s'%(type(e),e)).encode('utf-8'))
+        responder.wfile.write(('Exception occured in tiroFinale https worker: %s %s'%(type(e),e)).encode('utf-8'))
         responder.wfile.close()
         raise

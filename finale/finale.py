@@ -46,7 +46,7 @@ class Website:
             cherrypy.response.headers['Content-Type']='text/plain'
             return 'Finale Error: Request failed. %s %s'%(type(e),e)
 
-        print('finale: [OK] %s'%cherrypy.request.json['url'])
+        print('finale: [%d] %s'%(res.status_code,cherrypy.request.json['url']))
 
         def extract():
             yield from res.raw.stream(CHUNKSIZE,decode_content=False)

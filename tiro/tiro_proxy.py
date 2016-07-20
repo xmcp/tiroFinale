@@ -2,7 +2,6 @@
 #based on https://github.com/senko/tornado-proxy
 
 import socket
-import threading
 
 import tornado.httpserver
 import tornado.ioloop
@@ -42,12 +41,30 @@ class ProxyHandler(tornado.web.RequestHandler):
                     self.write(response.body)
             self.finish()
 
+        def callback_puthead(code,reason,headers):
+            self.set_status(code, reason)
+            self._headers = tornado.httputil.HTTPHeaders()
+            for k,v in headers:
+                if k.lower() not in ['connection','transfer-encoding']:
+                    self.add_header(k, v)
+            self.flush()
+        
+        def callback_putdata(data):
+            self.write(data)
+            self.flush()
+        
+        def callback_finish():
+            self.finish()
+            
         body = self.request.body
         try:
             if 'Proxy-Connection' in self.request.headers:
                 del self.request.headers['Proxy-Connection']
             finale_launcher.tornado_fetcher(
-                self,
+                ioloop,
+                callback_puthead,
+                callback_putdata,
+                callback_finish,
                 self.request.method,
                 self.request.uri,
                 self.request.headers,
@@ -101,6 +118,7 @@ def run_proxy():
         (r'.*', ProxyHandler),
     ])
     app.listen(PORT)
+    global ioloop
     ioloop = tornado.ioloop.IOLoop.instance()
     ioloop.start()
 

@@ -3,4 +3,5 @@ __pycache__/
 /.idea/
 /tiro/_generated_keys/
 /tiro/ssl_stuff/serial
+/tiro/openssl/
 /finale/.git/
