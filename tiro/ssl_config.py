@@ -3,6 +3,7 @@
 openssl_bin=r'"openssl/openssl.exe"'
 validity_days=365
 key_dir='_generated_keys'
+psl_filename='ssl_stuff/public_suffix_list.dat'
 
 ca_key_file='ssl_stuff/tiroFinale_CA.ca.key'
 ca_crt_file='ssl_stuff/tiroFinale_CA.ca.crt'

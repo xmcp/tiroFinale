@@ -8,6 +8,7 @@ import os
 import finale_launcher
 from makecert import CertManager
 import ssl_config
+from const import SSL_WILDCARD
 
 class MultithreadServer(socketserver.ThreadingMixIn, HTTPServer):
     pass
@@ -26,9 +27,23 @@ class MyHandler(BaseHTTPRequestHandler):
     
     def log_message(self,*_):
         pass #default server log
-    
+
+_psl=None
+def normdomain(domain):
+    from publicsuffix import PublicSuffixList
+    global _psl
+
+    if _psl is None:
+        print('ssl: loading public suffix list')
+        _psl=PublicSuffixList(open(ssl_config.psl_filename, encoding='utf-8'))
+
+    suf=_psl.get_public_suffix(domain)
+    return domain if domain==suf else '*.%s'%suf
+
 cache={}
 def create_wrapper(host):
+    if SSL_WILDCARD:
+        host=normdomain(host)
     if host in cache:
         return cache[host]
 

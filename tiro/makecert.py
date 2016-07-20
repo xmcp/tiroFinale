@@ -4,15 +4,11 @@
 import shutil
 import os
 
-from publicsuffix import PublicSuffixList
-psl=None
-
 from os.path import abspath
 from os.path import join as pathjoin
 from subprocess import Popen, PIPE
 
 import ssl_config as conf
-from const import SSL_WILDCARD
 
 #from utils.py
 
@@ -49,15 +45,6 @@ class CertManager(object):
 
         self.prepare()
         super(CertManager, self).__init__()
-
-    @staticmethod
-    def normdomain(domain):
-        global psl
-        if psl is None:
-            print('ssl: loading public suffix list')
-            psl=PublicSuffixList(open('ssl_stuff/public_suffix_list.dat',encoding='utf-8'))
-        suf=psl.get_public_suffix(domain)
-        return domain if domain==suf else '*.%s'%suf
         
     @staticmethod
     def normpath(path):
@@ -78,8 +65,6 @@ class CertManager(object):
         return domain, domain.replace('*', 'wildcard')
 
     def generate(self, domain, force=False):
-        if SSL_WILDCARD:
-            domain=self.normdomain(domain)
         domain, fdomain = self.sanitize_domain(domain)
 
         if self.check_cert(domain) and not force:

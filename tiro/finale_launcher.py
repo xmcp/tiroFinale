@@ -2,14 +2,13 @@
 
 import requests
 from contextlib import closing
-import tornado.httputil
 import base64
-
+import zlib
 import threading
 import json
 
-from const import CHUNKSIZE, FINALE_URL, TIMEOUT, PASSWORD, POOLSIZE
-API_VERSION = 'APIv2'
+from const import CHUNKSIZE, FINALE_URL, TIMEOUT, PASSWORD, POOLSIZE, COMPRESS_THRESHOLD
+API_VERSION = 'APIv3'
 
 s=requests.Session()
 s.trust_env=False #disable original proxy
@@ -18,17 +17,20 @@ s.mount('http://',thread_adapter)
 
 def _finale_request(method, url, headers, body):
     print('tiro: %s %s'%(method,url))
+    data={
+        'auth': PASSWORD,
+        'method': method,
+        'url': url,
+        'headers': dict(headers),
+        'data': base64.b64encode(body or b'').decode(),
+        'timeout': TIMEOUT
+    }
+    dumped=json.dumps(data)
     res=s.post(
         FINALE_URL,
         params={'api':API_VERSION},
-        json={
-            'auth': PASSWORD,
-            'method': method,
-            'url': url,
-            'headers': dict(headers),
-            'data': base64.b64encode(body or b'').decode(),
-            'timeout': TIMEOUT
-        },
+        json=[True,base64.b85encode(zlib.compress(dumped.encode())).decode()]\
+            if COMPRESS_THRESHOLD and len(dumped)>=COMPRESS_THRESHOLD else [False,data],
         stream=True,allow_redirects=False,timeout=TIMEOUT
     )
 

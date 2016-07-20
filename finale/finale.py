@@ -4,6 +4,7 @@ import json
 import requests
 import cherrypy
 import base64
+import zlib
 import os
 
 requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
@@ -11,7 +12,7 @@ requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.
 PORT=int(os.environ.get('PORT',4446))
 CHUNKSIZE=64*1024
 PASSWORD='rdfzyjy'
-API_VERSION='APIv2'
+API_VERSION='APIv3'
 
 class Website:
     @cherrypy.expose()
@@ -20,25 +21,35 @@ class Website:
         if api!=API_VERSION:
             cherrypy.response.status='400 Tiro Version Mismatch'
             cherrypy.response.headers['Content-Type']='text/plain'
-            return 'Finale Error: You are running tiroFinale %s while this server is running %s.'%(api,API_VERSION)
+            return 'You are running tiroFinale client %s while this server runs %s. ' \
+                   'Visit https://github.com/xmcp/tiroFinale to update your client.'%(api,API_VERSION)
 
-        if cherrypy.request.json['auth']!=PASSWORD:
+        data=cherrypy.request.json[1]
+        if cherrypy.request.json[0]: #compression flag
+            try:
+                data=json.loads(zlib.decompress(base64.b85decode(data.encode())).decode())
+            except Exception as e:
+                cherrypy.response.status='500 Finale Decoding Error'
+                cherrypy.response.headers['Content-Type']='text/plain'
+                return "Finale Error: Cannot decode client's compressed data. %s %s"%(type(e),e)
+
+        if data['auth']!=PASSWORD:
             cherrypy.response.status='401 Finale Password Incorrect'
             cherrypy.response.headers['Content-Type']='text/plain'
-            return 'Finale Error: Your Password for tiroFinale is Incorrect'
+            return 'Finale Error: Your password for tiroFinale is incorrect.'
 
-        print('finale: %s %s'%(cherrypy.request.json['method'],cherrypy.request.json['url']))
+        print('finale: %s %s'%(data['method'],data['url']))
         s=requests.Session()
         s.trust_env=False
         try:
             res=s.request(
-                cherrypy.request.json['method'],
-                cherrypy.request.json['url'],
-                headers=cherrypy.request.json['headers'],
-                data=base64.b64decode(cherrypy.request.json['data'].encode()),
+                data['method'],
+                data['url'],
+                headers=data['headers'],
+                data=base64.b64decode(data['data'].encode()),
                 stream=True,
                 allow_redirects=False,
-                timeout=cherrypy.request.json['timeout'],
+                timeout=data['timeout'],
                 verify=False,
             )
         except Exception as e:
@@ -46,7 +57,7 @@ class Website:
             cherrypy.response.headers['Content-Type']='text/plain'
             return 'Finale Error: Request failed. %s %s'%(type(e),e)
 
-        print('finale: [%d] %s'%(res.status_code,cherrypy.request.json['url']))
+        print('finale: [%d] %s'%(res.status_code,data['url']))
 
         def extract():
             yield from res.raw.stream(CHUNKSIZE,decode_content=False)
