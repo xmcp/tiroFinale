@@ -1,13 +1,19 @@
 # tiroFinale
 An <del>*INEFFICIENT*</del> (improved) and *INSECURE* python HTTP(S) proxy
 
-The client-side program `tiro` requires OpenSSL and Python 3.x, and supports at least Windows and Linux.
+The client-side program (*tiro*) requires OpenSSL and Python 3.x, and supports at least Windows and Linux.
 
-The server-side program `finale` requires Python 3.x, and supports at least [heroku](http://heroku.com) and MS Azure Web App.
+The server-side program (*Finale*) requires Python 3.x, and supports at least [heroku](http://heroku.com) and MS Azure Web App.
 
 ![tirofinale](https://cloud.githubusercontent.com/assets/6646473/16940706/251b6fde-4dbe-11e6-9a1c-701e45aeb630.png)
 
 [Official](http://bangumi.bilibili.com/anime/2539) Pronounciation: **踢咯，飞那里！**
+
+## Demo
+
+Windows binaries for tiro: [Releases](https://github.com/xmcp/tiroFinale/releases)
+
+Finale server demo: `http://finale.herokuapp.com/finale` (password: `rdfzyjy`)
 
 ## Efficiency
 
@@ -15,7 +21,7 @@ Not using tiroFinale proxy: *LOAD: 3.46s*
 
 ![before](https://cloud.githubusercontent.com/assets/6646473/16955889/e033fc4c-4e08-11e6-9b18-f00bf75a5f50.png)
 
-Using tiroFinale proxy from localhost: *LOAD: 4.95s*
+Using tiroFinale proxy (v2.5) from localhost: *LOAD: 4.95s*
 
 ![after](https://cloud.githubusercontent.com/assets/6646473/16955850/c6c0f666-4e08-11e6-9feb-7fd576c5cf44.png)
 
