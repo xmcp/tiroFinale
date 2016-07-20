@@ -6,3 +6,4 @@ FINALE_URL = 'http://127.0.0.1:4446/finale'
 TIMEOUT = 30
 PASSWORD = 'rdfzyjy'
 POOLSIZE = 100
+SSL_WILDCARD = True

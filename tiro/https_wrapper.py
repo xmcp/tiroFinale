@@ -55,4 +55,4 @@ def create_wrapper(host):
     return port
 
 if __name__=='__main__':
-    create_wrapper('t.cn')
+    create_wrapper('www.t.cn')
