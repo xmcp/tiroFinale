@@ -4,7 +4,7 @@ from cx_Freeze import setup, Executable
 base = None
 executables = [Executable(script='tiro_proxy.py',
                base=base,
-               targetName="tiro.exe",
+               targetName="tiroFinale-client.exe",
                compress=True)]
 setup(name='tiroFinale',
       version='1.0',
