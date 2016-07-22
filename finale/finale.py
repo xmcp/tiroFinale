@@ -12,14 +12,22 @@ requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.
 PORT=int(os.environ.get('PORT',4446))
 CHUNKSIZE=64*1024
 PASSWORD='rdfzyjy'
-API_VERSION='APIv3'
+API_VERSION='APIv4'
+POOLSIZE=100
 
 class Website:
+    def __init__(self):
+        self.session=requests.Session()
+        self.session.trust_env=False
+        thread_adapter=requests.adapters.HTTPAdapter(pool_connections=POOLSIZE, pool_maxsize=POOLSIZE)
+        self.session.mount('http://',thread_adapter)
+        self.session.mount('https://',thread_adapter)
+
     @cherrypy.expose()
     @cherrypy.tools.json_in()
-    def finale(self,api='APIv1'):
+    def finale(self,api='UNDEFINED_VERSION'):
         if api!=API_VERSION:
-            cherrypy.response.status='400 Tiro Version Mismatch'
+            cherrypy.response.status='400 tiroFinale Version Mismatch'
             cherrypy.response.headers['Content-Type']='text/plain'
             return 'You are running tiroFinale client %s while this server runs %s. ' \
                    'Visit https://github.com/xmcp/tiroFinale to update your client.'%(api,API_VERSION)
@@ -39,8 +47,11 @@ class Website:
             return 'Finale Error: Your password for tiroFinale is incorrect.'
 
         print('finale: %s %s'%(data['method'],data['url']))
-        s=requests.Session()
-        s.trust_env=False
+        if data['reuse']:
+            s=self.session
+        else:
+            s=requests.Session()
+            s.trust_env=False
         try:
             res=s.request(
                 data['method'],

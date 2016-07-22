@@ -23,24 +23,6 @@ class ProxyHandler(tornado.web.RequestHandler):
 
     @tornado.web.asynchronous
     def get(self):
-        def handle_response(response):
-            if (response.error and not
-                    isinstance(response.error, tornado.httpclient.HTTPError)):
-                self.set_status(500)
-                self.write('Internal server error:\n' + str(response.error))
-            else:
-                self.set_status(response.code, response.reason)
-                self._headers = tornado.httputil.HTTPHeaders() # clear tornado default header
-
-                for header, v in response.headers.get_all():
-                    if header not in ('Content-Length', 'Transfer-Encoding', 'Content-Encoding', 'Connection'):
-                        self.add_header(header, v) # some header appear multiple times, eg 'Set-Cookie'
-
-                if response.body:
-                    self.set_header('Content-Length', len(response.body))
-                    self.write(response.body)
-            self.finish()
-
         def callback_puthead(code,reason,headers):
             self.set_status(code, reason)
             self._headers = tornado.httputil.HTTPHeaders()
@@ -57,26 +39,19 @@ class ProxyHandler(tornado.web.RequestHandler):
             self.finish()
             
         body = self.request.body
-        try:
-            if 'Proxy-Connection' in self.request.headers:
-                del self.request.headers['Proxy-Connection']
-            finale_launcher.tornado_fetcher(
-                ioloop,
-                callback_puthead,
-                callback_putdata,
-                callback_finish,
-                self.request.method,
-                self.request.uri,
-                self.request.headers,
-                body,
-            )
-        except tornado.httpclient.HTTPError as e:
-            if hasattr(e, 'response') and e.response:
-                handle_response(e.response)
-            else:
-                self.set_status(500)
-                self.write('Internal server error:\n' + str(e))
-                self.finish()
+        if 'Proxy-Connection' in self.request.headers:
+            del self.request.headers['Proxy-Connection']
+
+        finale_launcher.tornado_fetcher(
+            ioloop,
+            callback_puthead,
+            callback_putdata,
+            callback_finish,
+            self.request.method,
+            self.request.uri,
+            self.request.headers,
+            body,
+        )
 
     post=get
     head=get

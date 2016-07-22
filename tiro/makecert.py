@@ -40,12 +40,22 @@ class CertManager(object):
         self.ca_crt = self.normpath(conf.ca_crt_file)
         self.ca_ser = self.normpath(conf.ca_serial_file)
         self.ca_cnf = self.normpath(conf.ca_openssl_config)
-        self.obin = conf.openssl_bin
+        self.obin = self.get_openssl(conf.default_openssl_bins)
         self.validity_days = int(conf.validity_days)
 
         self.prepare()
         super(CertManager, self).__init__()
-        
+
+    @staticmethod
+    def get_openssl(paths):
+        for path in paths:
+            p=popen_process('%s version'%path)
+            if not p[3] and not p[2]: # errcode==0 and stderr==b''
+                print('ssl: OpenSSL executable found at %s: %s'%(path,popen_fulloutput(p).rstrip()))
+                return path
+        print('ssl: critical: cannot find a OpenSSL executable. edit `const.py` for a custom one.')
+        raise RuntimeError('no openssl bin')
+
     @staticmethod
     def normpath(path):
         path = os.path.normpath(path)

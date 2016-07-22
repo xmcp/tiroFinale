@@ -10,13 +10,14 @@ import threading
 import json
 
 import gfwlist
-from const import CHUNKSIZE, FINALE_URL, TIMEOUT, PASSWORD, POOLSIZE, COMPRESS_THRESHOLD, GFWLIST_ENABLED
-API_VERSION = 'APIv3'
+from const import CHUNKSIZE, FINALE_URL, TIMEOUT, PASSWORD, POOLSIZE, COMPRESS_THRESHOLD, GFWLIST_ENABLED, REUSE_SESSION
+API_VERSION = 'APIv4'
 
 s=requests.Session()
 s.trust_env=False #disable original proxy
 thread_adapter=requests.adapters.HTTPAdapter(pool_connections=POOLSIZE, pool_maxsize=POOLSIZE)
 s.mount('http://',thread_adapter)
+s.mount('https://',thread_adapter)
 
 def _real_finale_request(method, url, headers, body):
     print('tiro->Finale: %s %s'%(method,url))
@@ -26,6 +27,7 @@ def _real_finale_request(method, url, headers, body):
         'url': url,
         'headers': dict(headers),
         'data': base64.b64encode(body or b'').decode(),
+        'reuse': REUSE_SESSION,
         'timeout': TIMEOUT
     }
     dumped=json.dumps(data)
@@ -49,10 +51,13 @@ def _real_finale_request(method, url, headers, body):
 
 def _direct_request(method, url, headers, body):
     print('tiro->Direct: %s %s'%(method,url))
-    direct_session=requests.Session() #create a new session to clear cookies etc.
-    direct_session.trust_env=False
 
-    res=direct_session.request(
+    if REUSE_SESSION:
+        ss=s
+    else:
+        ss=requests.Session()
+        ss.trust_env=False
+    res=ss.request(
         method, url,
         headers=headers, data=body,
         stream=True, allow_redirects=False, timeout=TIMEOUT,

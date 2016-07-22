@@ -1,6 +1,13 @@
 #coding=utf-8
+from const import OPENSSL_BIN
 
-openssl_bin=r'"openssl/openssl.exe"'
+default_openssl_bins=[
+    OPENSSL_BIN,
+    r'openssl',
+    r'"openssl/openssl.exe"',
+    r'"C:/Program Files/Git/mingw32/bin/openssl.exe"',
+    r'"C:/Program Files (x86)/Git/mingw32/bin/openssl.exe"',
+]
 validity_days=365
 key_dir='_generated_keys'
 psl_filename='ssl_stuff/public_suffix_list.dat'
