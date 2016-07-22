@@ -9,16 +9,6 @@ from os.path import join as pathjoin
 from subprocess import Popen, PIPE
 
 import ssl_config as conf
-
-def get_openssl():
-    for path in conf.default_openssl_bins:
-        p=popen_process('%s version'%path)
-        if not p[3] and not p[2]: # errcode==0 and stderr==b''
-            print('ssl: OpenSSL executable found at %s: %s'%(path,popen_fulloutput(p).rstrip()))
-            return path
-    print('ssl: critical: cannot find a OpenSSL executable. edit `const.py` for a custom one.')
-    raise RuntimeError('no openssl bin')
-OBIN=get_openssl()
     
 #from utils.py
 
@@ -38,6 +28,16 @@ def popen_fulloutput(output):
     return full_output
 
 #from tlsmanager.py
+
+def get_openssl():
+    for path in conf.default_openssl_bins:
+        p=popen_process('%s version'%path)
+        if not p[3] and not p[2]: # errcode==0 and stderr==b''
+            print('ssl: OpenSSL executable found at %s: %s'%(path,popen_fulloutput(p).rstrip()))
+            return path
+    print('ssl: critical: cannot find a OpenSSL executable. edit `const.py` for a custom one.')
+    raise RuntimeError('no openssl bin')
+OBIN=get_openssl()
 
 class CertManager(object):
     OPENSSL_NEWKEY_FORMAT = '{4} req  -new -config {0} -keyform PEM -keyout {1} -outform PEM -out {2} -nodes -newkey 1024 -subj {3}'

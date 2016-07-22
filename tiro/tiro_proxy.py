@@ -98,5 +98,5 @@ def run_proxy():
     ioloop.start()
 
 if __name__ == '__main__':
-    print("Starting HTTP proxy on port %d" % PORT)
+    print("main: starting HTTP proxy on port %d" % PORT)
     run_proxy()
