@@ -1,5 +1,5 @@
 # tiroFinale
-An <del>*INEFFICIENT*</del> (improved) and *INSECURE* python HTTP(S) proxy
+An <del>*INEFFICIENT*</del> (improved a lot in v2.7 and v4.0 update) and *INSECURE* python HTTP(S) proxy
 
 The client-side program (*tiro*) requires OpenSSL and Python 3.x, and supports at least Windows and Linux.
 
@@ -9,22 +9,15 @@ The server-side program (*Finale*) requires Python 3.x, and supports at least [h
 
 [Official](http://bangumi.bilibili.com/anime/2539) Pronounciation: **踢咯，飞那里！**
 
-## Demo
-
-Windows binaries for tiro: [Releases](https://github.com/xmcp/tiroFinale/releases)
-
-Finale server demo: `http://finale.herokuapp.com/finale` (password: `rdfzyjy`)
-
 ## Efficiency
 
-Not using tiroFinale proxy: *LOAD: 3.46s*
+Not using tiroFinale proxy: *LOAD: 3.02s*
 
-![before](https://cloud.githubusercontent.com/assets/6646473/16955889/e033fc4c-4e08-11e6-9b18-f00bf75a5f50.png)
+![direct](https://cloud.githubusercontent.com/assets/6646473/17058008/6a7b9da8-5050-11e6-86b3-e81065bd9cca.png)
 
-Using tiroFinale proxy (v2.5) from localhost: *LOAD: 4.95s*
+Using tiroFinale proxy (v4.0.02) from localhost: *LOAD: 3.32s*
 
-![after](https://cloud.githubusercontent.com/assets/6646473/16955850/c6c0f666-4e08-11e6-9feb-7fd576c5cf44.png)
-
+![with_tf](https://cloud.githubusercontent.com/assets/6646473/17058009/6a7bc846-5050-11e6-85f1-85e0b5c7f36e.png)
 
 ## Server (`finale`) Setup
 
@@ -35,10 +28,12 @@ Using tiroFinale proxy (v2.5) from localhost: *LOAD: 4.95s*
 
 ## Client (`tiro`) Setup
 
+You might want Windows binaries for the client: [Releases](https://github.com/xmcp/tiroFinale/releases)
+
 1. Clone the repository, then `cd tiro`
 2. `python3 -m pip install -r requirements.txt`
-3. `vi ssl_config.py` and fill in your OpenSSL executable path (on Linux, just fill in `openssl`)
-4. `vi finale_launcher.py` and fill in FINALE_URL and its PASSWORD
+3. `vi const.py` and fill in your preferences
+4. Add `ssl_stuff/tiroFinale_CA.ca.crt` to the OS/web-browser CAs as you want
 5. `python3 ./tiro_proxy.py`
 
 ## Todo-List
@@ -48,7 +43,7 @@ Using tiroFinale proxy (v2.5) from localhost: *LOAD: 4.95s*
 - [x] Improve efficiency
 - [x] Add `GFWList` support
 - [x] Use wildcard SSL certificate if possible
-- [ ] Network error handling and retransmission
+- [ ] <del>Network error handling and retransmission</del> *(deprecated due to the compatibility concern)*
 - [ ] Showing statistics
 
 ## Special thanks to:
