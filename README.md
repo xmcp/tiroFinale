@@ -43,7 +43,7 @@ Using tiroFinale proxy (v2.5) from localhost: *LOAD: 4.95s*
 
 ## Todo-List
 
-- [ ] Add GUI support for `tiro`
+- [ ] Add <del>GUI</del> WebUI support for `tiro`
 - [x] Fix the `Content-Length` related bug
 - [x] Improve efficiency
 - [x] Add `GFWList` support
