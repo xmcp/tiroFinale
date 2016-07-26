@@ -13,6 +13,7 @@ setup(name='tiroFinale',
         'optimize':2,
         'include_files':['const.py'],
         'excludes':'const',
+        'includes':'cherrypy.wsgiserver.wsgiserver3',
       }},
       executables=executables)
 
@@ -21,6 +22,8 @@ setup(name='tiroFinale',
 if os.path.isdir('openssl'):
     shutil.copytree('openssl','build/exe.win32-3.4/openssl')
 shutil.copytree('ssl_stuff','build/exe.win32-3.4/ssl_stuff')
+shutil.copytree('portal/static','build/exe.win32-3.4/portal/static')
+shutil.copytree('portal/templates','build/exe.win32-3.4/portal/templates')
 
 print('===== DONE =====')
 
