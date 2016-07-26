@@ -1,5 +1,5 @@
 # tiroFinale
-An <del>*INEFFICIENT*</del> (improved a lot in v2.7 and v4.0 update) and *INSECURE* python HTTP(S) proxy
+An <del>*INEFFICIENT*</del> (improved a lot in v2.7 and v4.0 update) and *INSECURE* (to be improved) python HTTP(S) proxy
 
 The client-side program (*tiro*) requires OpenSSL and Python 3.x, and supports at least Windows and Linux.
 
@@ -45,6 +45,7 @@ You might want Windows binaries for the client: [Releases](https://github.com/xm
 - [x] Use wildcard SSL certificate if possible
 - [ ] <del>Network error handling and retransmission</del> *(deprecated due to the compatibility concern)*
 - [ ] Showing statistics
+- [ ] Improve security
 
 ## Special thanks to:
 
