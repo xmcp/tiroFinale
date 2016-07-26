@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<%!
+    import const
+%>
+
+<%def name='draw_status(good,direct=False)'>
+    <div class="svg-image">
+        <svg width="620" height="125" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+            <!-- Created with SVG-edit - http://svg-edit.googlecode.com/ -->
+            <g>
+                <line fill="none" stroke-width="5" stroke="#00007f" stroke-dasharray="null" x1="50" y1="50" x2="550" y2="50"></line>
+
+                %for ind in range(5):
+                    <circle fill="#${'7c7cff' if ind<=good else 'ff7a7a' if ind==good+1 else '878787'}"
+                            stroke="#${'00007f' if ind<=good else 'ad0000' if ind==good+1 else '3d3d3d'}"
+                            stroke-width="5"  cx="${50+ind*125}" cy="50" r="15"></circle>
+                %endfor
+
+                <text fill="#000000" x="50" y="85" font-size="20" font-family="consolas" text-anchor="middle">You</text>
+                <text fill="#000000" x="175" y="85" font-size="20" font-family="consolas" text-anchor="middle">Proxy</text>
+                <text fill="#000000" x="300" y="85" font-size="20" font-family="consolas" text-anchor="middle">Wrapper</text>
+                <text fill="#000000" x="425" y="85" font-size="20" font-family="consolas" text-anchor="middle">${'(Direct)' if direct else 'Finale'}</text>
+                <text fill="#000000" x="550" y="85" font-size="20" font-family="consolas" text-anchor="middle">Internet</text>
+
+                %for ind in range(4):
+                    <text fill="#000000" x="${112.5+ind*125}" y="40" font-size="30" font-family="consolas" text-anchor="middle">
+                        ${'✓' if ind<good else '×' if ind==good else ''}
+                    </text>
+                %endfor
+            </g>
+        </svg>
+    </div>
+</%def>
+
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%block name='title' /></title>
+
+    <link rel="stylesheet" href="http://127.0.0.1:${const.PORTAL_PORT|u}/static/bootstrap/css/bootstrap.min.css">
+    <script src="http://127.0.0.1:${const.PORTAL_PORT|u}/static/bootstrap/js/jquery.min.js"></script>
+    <script src="http://127.0.0.1:${const.PORTAL_PORT|u}/static/bootstrap/js/bootstrap.min.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <style>
+        p {
+            line-height: 34px;
+            font-size: 20px;
+        }
+        .svg-image {
+            width: 100%;
+            text-align: center;
+        }
+    </style>
+</head>
+<body><div class="container">
+    ${self.body(const=const)}
+</div></body>
+</html>

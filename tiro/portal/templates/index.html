@@ -1,0 +1,16 @@
+<%page args='const' />
+<%inherit file='base.html' />
+<%block name='title'>tiroFinale</%block>
+
+<div class="page-header">
+    <h1>tiroFinale proxy is running smoothly.</h1>
+</div>
+
+${self.draw_status(4)}
+
+<p>
+    Finale URL: <code>${const.FINALE_URL|h}</code>
+    <a href="/conf" class="btn btn-link pull-right">
+        <span class="glyphicon glyphicon-cog"></span> Configure
+    </a>
+</p>

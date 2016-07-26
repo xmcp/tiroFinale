@@ -1,0 +1,26 @@
+<%page args='const' />
+<%inherit file='base.html' />
+<%block name='title'>Error Page - tiroFinale</%block>
+
+<style>
+    body {
+        background-color: #fee;
+    }
+</style>
+
+<script>
+    $(function() {
+        var context = canvas.getContext('2d');
+    })
+</script>
+
+<div class="page-header">
+    <h1>${reason|h}</h1>
+</div>
+
+${self.draw_status(level,direct)}
+
+<p>tiroFinale proxy encountered an unexpected condition which prevented it from fulfilling the request.</p>
+<p>The traceback below might be useful for troubleshooting.</p>
+
+<pre><code>${traceback|h}</code></pre>

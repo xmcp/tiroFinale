@@ -8,10 +8,15 @@ import base64
 import zlib
 import threading
 import json
+import traceback
 
 import gfwlist
-from const import CHUNKSIZE, FINALE_URL, TIMEOUT, PASSWORD, POOLSIZE, COMPRESS_THRESHOLD, GFWLIST_ENABLED, REUSE_SESSION
-API_VERSION = 'APIv4'
+from portal import web_portal
+from const import CHUNKSIZE, FINALE_URL, TIMEOUT, PASSWORD, POOLSIZE, COMPRESS_THRESHOLD,\
+                    GFWLIST_ENABLED, REUSE_SESSION, _TEST_URL, PORTAL_PORT
+
+API_VERSION = 'APIv5'
+PORTAL_ROOT='http://127.0.0.1:%d'%PORTAL_PORT
 
 s=requests.Session()
 s.trust_env=False #disable original proxy
@@ -45,6 +50,11 @@ def _real_finale_request(method, url, headers, body):
         res.headers=json.loads(res.headers['X-Finale-Headers'])
     else:
         print('tiro: Finale error %d %s: %s'%(res.status_code,res.reason,url))
+        return closing(requests.post(PORTAL_ROOT+'/error',stream=True,data={
+            'level': 3,
+            'reason': 'Finale server returns HTTP %d %s.'%(res.status_code,res.reason),
+            'traceback': b''.join(res.iter_content()).decode('utf-8','ignore')
+        }))
         
     print('tiro: [%d] %s'%(res.status_code,url))
     return closing(res)
@@ -71,13 +81,24 @@ def _is_domain_filtered(domain):
     domain=domain.split('.')
     return any((True for x in range(len(domain)) if '.'.join(domain[x:]) in gfwlist.domains))
 
-def finale_request(method, url, headers, body):
-    if GFWLIST_ENABLED:
+@lru_cache()
+def _should_go_direct(url):
+    if url.partition('?')[0]==_TEST_URL:
+        return True
+    else:
         domain=urllib.parse.urlsplit(url).netloc
-        if _is_domain_filtered(domain):
-            return _real_finale_request(method, url, headers, body)
+        if domain.partition(':')[0]=='127.0.0.1':
+            return True
+        elif GFWLIST_ENABLED:
+            return not _is_domain_filtered(domain)
         else:
-            return _direct_request(method, url, headers, body)
+            return False
+
+def finale_request(method, url, headers, body):
+    if url.partition('?')[0]==_TEST_URL:
+        return _direct_request('get',PORTAL_ROOT+'/intro?sub=1',{},None)
+    elif _should_go_direct(url):
+        return _direct_request(method, url, headers, body)
     else:
         return _real_finale_request(method, url, headers, body)
 
@@ -94,9 +115,14 @@ def tornado_fetcher(ioloop, puthead, putdata, finish, method, url, headers, body
             for content in res.raw.stream(CHUNKSIZE,decode_content=False):
                 ioloop.add_callback(putdata,content) #fixme: "Tried to write more data than Content-Length"
             ioloop.add_callback(finish)
-    except Exception as e:
-        ioloop.add_callback(puthead,504,'tiroFinale Error',[('Content-Type','Text/Plain')])
-        ioloop.add_callback(putdata,'Exception occured in tiroFinale tornado worker: %s %s'%(type(e),e))
+    except:
+        ioloop.add_callback(puthead,504,'tiroFinale Error',[('Content-Type','text/html')])
+        ioloop.add_callback(putdata,web_portal.template('error.html').render(
+            level=3 if _should_go_direct(url) else 2,
+            reason='Exception occured in tiroFinale tornado wrapper.',
+            traceback=traceback.format_exc(),
+            direct=_should_go_direct(url),
+        ))
         ioloop.add_callback(finish)
         raise
 
@@ -111,10 +137,15 @@ def base_fetcher(responder, method, url, headers, body):
             for content in res.raw.stream(CHUNKSIZE,decode_content=False):
                 responder.wfile.write(content)
             responder.wfile.close()
-    except Exception as e:
+    except:
         responder.send_response(504,'tiroFinale Error')
-        responder.send_header('Content-Type','Text/Plain')
+        responder.send_header('Content-Type','text/html')
         responder.end_headers()
-        responder.wfile.write(('Exception occured in tiroFinale https worker: %s %s'%(type(e),e)).encode('utf-8'))
+        responder.wfile.write((web_portal.template('error.html').render(
+            level=3 if _should_go_direct(url) else 2,
+            reason='Exception occured in tiroFinale HTTPS wrapper.',
+            traceback=traceback.format_exc(),
+            direct=_should_go_direct(url),
+        )).encode('utf-8'))
         responder.wfile.close()
         raise

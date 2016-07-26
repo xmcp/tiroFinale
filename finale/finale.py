@@ -1,6 +1,6 @@
 #coding=utf-8
 import json
-
+import traceback
 import requests
 import cherrypy
 import base64
@@ -12,7 +12,7 @@ requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.
 PORT=int(os.environ.get('PORT',4446))
 CHUNKSIZE=64*1024
 PASSWORD='rdfzyjy'
-API_VERSION='APIv4'
+API_VERSION='APIv5'
 POOLSIZE=100
 
 class Website:
@@ -63,10 +63,10 @@ class Website:
                 timeout=data['timeout'],
                 verify=False,
             )
-        except Exception as e:
+        except:
             cherrypy.response.status='504 Finale Connection Failed'
             cherrypy.response.headers['Content-Type']='text/plain'
-            return 'Finale Error: Request failed. %s %s'%(type(e),e)
+            return traceback.format_exc()
 
         print('finale: [%d] %s'%(res.status_code,data['url']))
 

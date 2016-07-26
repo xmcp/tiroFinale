@@ -27,7 +27,7 @@ def popen_fulloutput(output):
     full_output += output[2].decode('gbk','ignore')
     return full_output
 
-#from tlsmanager.py
+#helpers
 
 def get_openssl():
     for path in conf.default_openssl_bins:
@@ -38,6 +38,8 @@ def get_openssl():
     print('ssl: critical: cannot find a OpenSSL executable. edit `const.py` for a custom one.')
     raise RuntimeError('no openssl bin')
 OBIN=get_openssl()
+
+#from tlsmanager.py
 
 class CertManager(object):
     OPENSSL_NEWKEY_FORMAT = '{4} req  -new -config {0} -keyform PEM -keyout {1} -outform PEM -out {2} -nodes -newkey 1024 -subj {3}'

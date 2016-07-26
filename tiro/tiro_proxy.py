@@ -2,6 +2,8 @@
 #based on https://github.com/senko/tornado-proxy
 
 import socket
+import threading
+import webbrowser
 
 import tornado.httpserver
 import tornado.ioloop
@@ -12,8 +14,10 @@ import tornado.httputil
 
 import https_wrapper
 import finale_launcher
+from portal import web_portal
 
-from const import PORT
+from const import PROXY_PORT, PORTAL_PORT
+
 
 class ProxyHandler(tornado.web.RequestHandler):
     SUPPORTED_METHODS = ['GET', 'POST', 'HEAD', 'DELETE', 'PATCH', 'PUT', 'CONNECT']
@@ -92,11 +96,14 @@ def run_proxy():
     app = tornado.web.Application([
         (r'.*', ProxyHandler),
     ])
-    app.listen(PORT)
+    app.listen(PROXY_PORT)
     global ioloop
     ioloop = tornado.ioloop.IOLoop.instance()
     ioloop.start()
 
 if __name__ == '__main__':
-    print("main: starting HTTP proxy on port %d" % PORT)
+    print('portal: starting web portal on port %d'%PORTAL_PORT)
+    threading.Thread(target=web_portal.run).start()
+    print('main: starting HTTP proxy on port %d'%PROXY_PORT)
+    webbrowser.open('http://127.0.0.1:%d/intro'%PORTAL_PORT)
     run_proxy()

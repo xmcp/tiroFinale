@@ -1,0 +1,35 @@
+<%page args='const' />
+<%inherit file='base.html' />
+<%block name='title'>Welcome to tiroFinale</%block>
+
+<style>
+    #test-frame {
+        display: none;
+    }
+</style>
+
+<script>
+    $(function() {
+        window.${const._PORTAL_CALLBACK}=function() {
+            location.href='/';
+        };
+        var $test_frame=$('#test-frame');
+        setInterval(function() {
+            $test_frame.attr('src','${const._TEST_URL}?time='+(+new Date()));
+        },1000);
+    });
+</script>
+
+<div class="page-header">
+    <h1>Please set the HTTP proxy to <code>127.0.0.1:${const.PROXY_PORT|h}</code>.</h1>
+</div>
+
+${self.draw_status(0)}
+
+<p>
+    We will redirect you to the portal page after that.
+    <a href="/" class="btn btn-link pull-right">
+        <span class="glyphicon glyphicon-forward"></span> Skip this check
+    </a>
+</p>
+<iframe id="test-frame"></iframe>
