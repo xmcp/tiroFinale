@@ -38,7 +38,7 @@ You might want Windows binaries for the client: [Releases](https://github.com/xm
 
 ## Todo-List
 
-- [ ] Add <del>GUI</del> WebUI support for `tiro`
+- [x] Add <del>GUI</del> WebUI support for `tiro`
 - [x] Fix the `Content-Length` related bug
 - [x] Improve efficiency
 - [x] Add `GFWList` support

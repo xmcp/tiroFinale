@@ -10,12 +10,12 @@
 
 <script>
     $(function() {
-        window.${const._PORTAL_CALLBACK}=function() {
+        window.${const.PORTAL_CALLBACK}=function() {
             location.href='/';
         };
         var $test_frame=$('#test-frame');
         setInterval(function() {
-            $test_frame.attr('src','${const._TEST_URL}?time='+(+new Date()));
+            $test_frame.attr('src','${const.TEST_URL}?time='+(+new Date()));
         },1000);
     });
 </script>

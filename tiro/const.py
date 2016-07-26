@@ -37,5 +37,6 @@ REUSE_SESSION = True
 
 ## internal arguments
 
-_TEST_URL = 'http://example.com/not_exist/tiro_finale_test.page'
-_PORTAL_CALLBACK = '___callback_tf_proxy_running'
+# DO NOT CHANGE unless you know exactly what your are doing.
+TEST_URL = 'http://example.com/not_exist/tiro_finale_test.page'
+PORTAL_CALLBACK = '___callback_tf_proxy_running'

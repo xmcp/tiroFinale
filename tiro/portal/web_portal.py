@@ -4,7 +4,7 @@ import cherrypy
 from mako.lookup import TemplateLookup
 import os
 
-from const import PORTAL_PORT, _PORTAL_CALLBACK
+import const
 
 _lookup=TemplateLookup('portal/templates',input_encoding='utf-8',output_encoding='utf-8')
 def template(name):
@@ -15,7 +15,7 @@ class WebPortal:
     def intro(self,sub=False):
         if sub:
             if sub=='real':
-                return '<script>top.%s();</script>'%_PORTAL_CALLBACK
+                return '<script>top.%s();</script>'%const.PORTAL_CALLBACK
             else:
                 raise cherrypy.HTTPRedirect('/intro?sub=real')
         else:
@@ -31,15 +31,20 @@ class WebPortal:
         return template('error.html').render(level=int(level),reason=reason,traceback=traceback,direct=False)
 
     @cherrypy.expose()
-    def conf(self):
-        pass #todo
+    def finale_change(self,finale,password,timeout):
+        if not cherrypy.request.headers.get('referer','').startswith('http://127.0.0.1:%d/'%const.PORTAL_PORT):
+            return 'Error: referer invalid. Possible CSRF detected.'
+        const.TIMEOUT=int(timeout)
+        const.FINALE_URL=finale
+        const.PASSWORD=password
+        raise cherrypy.HTTPRedirect('/')
 
 conf={
     'global': {
         'engine.autoreload.on':False,
         'environment':'production',
         'server.socket_host':'127.0.0.1',
-        'server.socket_port':PORTAL_PORT,
+        'server.socket_port':const.PORTAL_PORT,
         'server.thread_pool':10,
     },
     '/': {

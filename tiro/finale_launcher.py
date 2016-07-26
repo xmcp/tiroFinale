@@ -12,36 +12,35 @@ import traceback
 
 import gfwlist
 from portal import web_portal
-from const import CHUNKSIZE, FINALE_URL, TIMEOUT, PASSWORD, POOLSIZE, COMPRESS_THRESHOLD,\
-                    GFWLIST_ENABLED, REUSE_SESSION, _TEST_URL, PORTAL_PORT
+import const
 
 API_VERSION = 'APIv5'
-PORTAL_ROOT='http://127.0.0.1:%d'%PORTAL_PORT
+PORTAL_ROOT='http://127.0.0.1:%d' % const.PORTAL_PORT
 
 s=requests.Session()
 s.trust_env=False #disable original proxy
-thread_adapter=requests.adapters.HTTPAdapter(pool_connections=POOLSIZE, pool_maxsize=POOLSIZE)
+thread_adapter=requests.adapters.HTTPAdapter(pool_connections=const.POOLSIZE, pool_maxsize=const.POOLSIZE)
 s.mount('http://',thread_adapter)
 s.mount('https://',thread_adapter)
 
 def _real_finale_request(method, url, headers, body):
     print('tiro->Finale: %s %s'%(method,url))
     data={
-        'auth': PASSWORD,
+        'auth': const.PASSWORD,
         'method': method,
         'url': url,
         'headers': dict(headers),
         'data': base64.b64encode(body or b'').decode(),
-        'reuse': REUSE_SESSION,
-        'timeout': TIMEOUT
+        'reuse': const.REUSE_SESSION,
+        'timeout': const.TIMEOUT
     }
     dumped=json.dumps(data)
     res=s.post(
-        FINALE_URL,
+        const.FINALE_URL,
         params={'api':API_VERSION},
         json=[True,base64.b85encode(zlib.compress(dumped.encode())).decode()]\
-            if COMPRESS_THRESHOLD and len(dumped)>=COMPRESS_THRESHOLD else [False,data],
-        stream=True, allow_redirects=False, timeout=TIMEOUT,
+            if const.COMPRESS_THRESHOLD and len(dumped) >= const.COMPRESS_THRESHOLD else [False, data],
+        stream=True, allow_redirects=False, timeout=const.TIMEOUT,
     )
 
     if 'X-Finale-Status' in res.headers:
@@ -62,7 +61,7 @@ def _real_finale_request(method, url, headers, body):
 def _direct_request(method, url, headers, body):
     print('tiro->Direct: %s %s'%(method,url))
 
-    if REUSE_SESSION:
+    if const.REUSE_SESSION:
         ss=s
     else:
         ss=requests.Session()
@@ -70,7 +69,7 @@ def _direct_request(method, url, headers, body):
     res=ss.request(
         method, url,
         headers=headers, data=body,
-        stream=True, allow_redirects=False, timeout=TIMEOUT,
+        stream=True, allow_redirects=False, timeout=const.TIMEOUT,
     )
 
     print('tiro: [%d] %s'%(res.status_code,url))
@@ -83,19 +82,19 @@ def _is_domain_filtered(domain):
 
 @lru_cache()
 def _should_go_direct(url):
-    if url.partition('?')[0]==_TEST_URL:
+    if url.partition('?')[0]==const.TEST_URL:
         return True
     else:
         domain=urllib.parse.urlsplit(url).netloc
         if domain.partition(':')[0]=='127.0.0.1':
             return True
-        elif GFWLIST_ENABLED:
+        elif const.GFWLIST_ENABLED:
             return not _is_domain_filtered(domain)
         else:
             return False
 
 def finale_request(method, url, headers, body):
-    if url.partition('?')[0]==_TEST_URL:
+    if url.partition('?')[0]==const.TEST_URL:
         return _direct_request('get',PORTAL_ROOT+'/intro?sub=1',{},None)
     elif _should_go_direct(url):
         return _direct_request(method, url, headers, body)
@@ -112,7 +111,7 @@ def tornado_fetcher(ioloop, puthead, putdata, finish, method, url, headers, body
     try:
         with finale_request(method, url, headers, body) as res:
             ioloop.add_callback(puthead,res.status_code,res.reason,res.headers.items())
-            for content in res.raw.stream(CHUNKSIZE,decode_content=False):
+            for content in res.raw.stream(const.CHUNKSIZE, decode_content=False):
                 ioloop.add_callback(putdata,content) #fixme: "Tried to write more data than Content-Length"
             ioloop.add_callback(finish)
     except:
@@ -134,7 +133,7 @@ def base_fetcher(responder, method, url, headers, body):
                 if k not in ['Connection','Transfer-Encoding']:
                     responder.send_header(k, v)
             responder.end_headers()
-            for content in res.raw.stream(CHUNKSIZE,decode_content=False):
+            for content in res.raw.stream(const.CHUNKSIZE, decode_content=False):
                 responder.wfile.write(content)
             responder.wfile.close()
     except:

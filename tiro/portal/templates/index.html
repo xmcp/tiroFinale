@@ -2,15 +2,41 @@
 <%inherit file='base.html' />
 <%block name='title'>tiroFinale</%block>
 
+<style>
+    input[type=url] {
+        font-family: Consolas, monospace;
+    }
+</style>
+
 <div class="page-header">
-    <h1>tiroFinale proxy is running smoothly.</h1>
+    <h1>tiroFinale proxy is running on port <code>${const.PROXY_PORT}</code>.</h1>
 </div>
 
-${self.draw_status(4)}
+${self.draw_status(-2)}
 
 <p>
     Finale URL: <code>${const.FINALE_URL|h}</code>
-    <a href="/conf" class="btn btn-link pull-right">
-        <span class="glyphicon glyphicon-cog"></span> Configure
-    </a>
+    <button type="button" onclick="$('#configer').fadeToggle(200)" class="btn btn-link pull-right">
+        <span class="glyphicon glyphicon-pencil"></span> Edit
+    </button>
 </p>
+<div class="well well-sm" id="configer" style="display: none"><div class="row">
+    <form action="/finale_change" method="post">
+        <div class="col-sm-5"><div class="input-group">
+            <span class="input-group-addon">Finale</span>
+            <input type="url" name="finale" required class="form-control" placeholder="Finale URL" value="${const.FINALE_URL|h}">
+        </div></div>
+        <div class="col-sm-3"><div class="input-group">
+            <span class="input-group-addon">Password</span>
+            <input type="password" name="password" class="form-control" placeholder="Finale Password" value="${const.PASSWORD|h}">
+        </div></div>
+        <div class="col-sm-4"><div class="input-group">
+            <span class="input-group-addon">Timeout</span>
+            <input type="number" required min="1" max="90" step="1" name="timeout" class="form-control" placeholder="(in second)" value="${const.TIMEOUT|h}">
+            <span class="input-group-btn"><button type="submit" class="btn btn-primary">
+                <span class="glyphicon glyphicon-ok"></span>
+                <span class="hidden-sm">&nbsp;Save</span>
+            </button></span>
+        </div></div>
+    </form>
+</div></div>
