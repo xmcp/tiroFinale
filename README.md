@@ -5,7 +5,7 @@ The client-side program (*tiro*) requires OpenSSL and Python 3.x, and supports a
 
 The server-side program (*Finale*) requires Python 3.x, and supports at least [heroku](http://heroku.com) and MS Azure Web App.
 
-![tirofinale](https://cloud.githubusercontent.com/assets/6646473/16940706/251b6fde-4dbe-11e6-9a1c-701e45aeb630.png)
+![logo](http://www.madoka-magica.com/special/img/present01/icon_mami.png)
 
 [Official](http://bangumi.bilibili.com/anime/2539) Pronounciation: **踢咯，飞那里！**
 
