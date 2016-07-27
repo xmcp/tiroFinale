@@ -86,9 +86,9 @@ def _should_go_direct(url):
         return True
     else:
         domain=urllib.parse.urlsplit(url).netloc
-        if domain.partition(':')[0]=='127.0.0.1':
+        if const.PROXY_MODE==0 or domain.partition(':')[0]=='127.0.0.1':
             return True
-        elif const.GFWLIST_ENABLED:
+        elif const.PROXY_MODE==1:
             return not _is_domain_filtered(domain)
         else:
             return False

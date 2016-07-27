@@ -1,21 +1,23 @@
 #coding=utf-8
 
 ## basic settings
+# you can also change Finale settings in the web portal
 
 PROXY_PORT = 8848
+PORTAL_PORT = 8844
 FINALE_URL = 'http://127.0.0.1:4446/finale'
 PASSWORD = 'rdfzyjy'
 TIMEOUT = 30 # in seconds
 OPENSSL_BIN = None # for who prefers a custom openssl executable
-PORTAL_PORT = 8844
 
 ## optimizations
+# designed for advanced users. change it at your own risk.
 
 CHUNKSIZE = 64*1024
 # the response streams are sent back in chunks.
-# do not edit unless you know what you are doing, as a large chunksize will increase TTFB.
+# a small chunksize will limit download speed; a large chunksize will increase TTFB.
 
-POOLSIZE = 100
+POOLSIZE = 128
 # tiro uses requests's connection pool mechanism.
 # improve concurrency but will consume more RAM.
 
@@ -27,16 +29,16 @@ COMPRESS_THRESHOLD = 32*1024
 # tiro uses gzip to compress large Finale request data.
 # increase the threshold for better upload speed. decrease the threshold for shorter TTFB.
 
-GFWLIST_ENABLED = False
-# tiro will use GFWList to determine whether to use Finale proxy or make the request directly.
-# experimental. do not enable unless you are really confident about GFWList.
+PROXY_MODE = 2
+# 0: Completely Direct / 1: Decided by GFWList (experimental) / 2: Completely Finale
+# for mode 1, tiro will use GFWList to determine whether to use Finale proxy or make the request directly.
 
 REUSE_SESSION = True
 # tiro will reuse the requests sessions of direct requests.
 # recommended. DRAMATICALLY improve efficiency, but have potential security vulnerability.
 
 ## internal arguments
+# undocumented. DO NOT CHANGE unless you know exactly what your are doing.
 
-# DO NOT CHANGE unless you know exactly what your are doing.
 TEST_URL = 'http://example.com/not_exist/tiro_finale_test.page'
 PORTAL_CALLBACK = '___callback_tf_proxy_running'

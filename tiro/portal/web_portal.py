@@ -4,6 +4,7 @@ import cherrypy
 from mako.lookup import TemplateLookup
 import os
 
+from finale_launcher import _should_go_direct
 import const
 
 _lookup=TemplateLookup('portal/templates',input_encoding='utf-8',output_encoding='utf-8')
@@ -38,6 +39,17 @@ class WebPortal:
         const.FINALE_URL=finale
         const.PASSWORD=password
         raise cherrypy.HTTPRedirect('/')
+
+    @cherrypy.expose()
+    def proxy_mode_change(self,mode):
+        if not cherrypy.request.headers.get('referer','').startswith('http://127.0.0.1:%d/'%const.PORTAL_PORT):
+            return 'Error: referer invalid. Possible CSRF detected.'
+        if int(mode) not in [0,1,2]:
+            return 'Error: bad proxy mode'
+        const.PROXY_MODE=int(mode)
+        _should_go_direct.cache_clear()
+        raise cherrypy.HTTPRedirect('/')
+
 
 conf={
     'global': {
