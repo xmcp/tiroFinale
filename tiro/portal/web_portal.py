@@ -4,7 +4,7 @@ import cherrypy
 from mako.lookup import TemplateLookup
 import os
 
-from finale_launcher import _should_go_direct
+import finale_launcher
 import const
 
 _lookup=TemplateLookup('portal/templates',input_encoding='utf-8',output_encoding='utf-8')
@@ -47,7 +47,7 @@ class WebPortal:
         if int(mode) not in [0,1,2]:
             return 'Error: bad proxy mode'
         const.PROXY_MODE=int(mode)
-        _should_go_direct.cache_clear()
+        finale_launcher._should_go_direct.cache_clear()
         raise cherrypy.HTTPRedirect('/')
 
 
