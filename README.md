@@ -1,5 +1,5 @@
 # tiroFinale
-An <del>*INEFFICIENT*</del> (improved a lot in v2.7 and v4.0 update) and *INSECURE* (to be improved) python HTTP(S) proxy
+An <del>*INEFFICIENT*</del> (improved a lot in v2.7 and v4.0 update) and *INSECURE* (to be improved) Python HTTP(S) proxy
 
 The client-side program (*tiro*) requires OpenSSL and Python 3.x, and supports at least Windows and Linux.
 
@@ -28,7 +28,7 @@ Using tiroFinale proxy (v4.0.02) from localhost: *LOAD: 3.32s*
 
 ## Client (`tiro`) Setup
 
-You might want Windows binaries for the client: [Releases](https://github.com/xmcp/tiroFinale/releases)
+**You might want Windows binaries for the client: [Releases](https://github.com/xmcp/tiroFinale/releases)**
 
 1. Clone the repository, then `cd tiro`
 2. `python3 -m pip install -r requirements.txt`
@@ -50,6 +50,6 @@ You might want Windows binaries for the client: [Releases](https://github.com/xm
 ## Special thanks to:
 
 - [senko/tornado-proxy](https://github.com/senko/tornado-proxy)
-- [python-simplecacher](https://github.com/Leryan/python-simplecacher)
+- [Leryan/python-simplecacher](https://github.com/Leryan/python-simplecacher)
 - [Leryan/genssl](https://github.com/Leryan/genssl)
 - [CaledoniaProject/GFWList](https://github.com/CaledoniaProject/GFWList)
