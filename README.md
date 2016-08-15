@@ -40,7 +40,7 @@ Using tiroFinale proxy (v4.0.02) from localhost: *LOAD: 3.32s*
 - [x] Fix the `Content-Length` related bug
 - [x] Improve efficiency
 - [x] Add `GFWList` support
-- [ ] Use better auto-detecting mechanism to replace the outdated `GFWList`
+- [x] Use better auto-detecting mechanism (`Jaô-Shingan™`) to replace the outdated `GFWList`
 - [x] Use wildcard SSL certificate if possible
 - [ ] <del>Network error handling and retransmission</del> *(deprecated due to the compatibility concern)*
 - [ ] <del>Showing statistics</del> *(deprecated as it's not so useful and it will probably affect efficiency somehow)*
