@@ -20,7 +20,7 @@ from const import PROXY_PORT, PORTAL_PORT
 
 
 class ProxyHandler(tornado.web.RequestHandler):
-    SUPPORTED_METHODS = ['GET', 'POST', 'HEAD', 'DELETE', 'PATCH', 'PUT', 'CONNECT']
+    SUPPORTED_METHODS = ['GET', 'POST', 'HEAD', 'DELETE', 'PATCH', 'PUT', 'OPTIONS', 'CONNECT']
 
     def compute_etag(self):
         return None # disable tornado Etag
@@ -62,6 +62,7 @@ class ProxyHandler(tornado.web.RequestHandler):
     delete=get
     patch=get
     put=get
+    options=get
 
     @tornado.web.asynchronous
     def connect(self):

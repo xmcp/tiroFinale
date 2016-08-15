@@ -135,16 +135,13 @@ def base_fetcher(responder, method, url, headers, body):
             responder.end_headers()
             for content in res.raw.stream(const.CHUNKSIZE, decode_content=False):
                 responder.wfile.write(content)
-            responder.wfile.close()
     except:
         responder.send_response(504,'tiroFinale Error')
         responder.send_header('Content-Type','text/html')
         responder.end_headers()
-        responder.wfile.write((web_portal.template('error.html').render(
+        responder.wfile.write(web_portal.template('error.html').render(
             level=3 if _should_go_direct(url) else 2,
             reason='Exception occured in tiroFinale HTTPS wrapper.',
             traceback=traceback.format_exc(),
             direct=_should_go_direct(url),
-        )).encode('utf-8'))
-        responder.wfile.close()
-        raise
+        ))

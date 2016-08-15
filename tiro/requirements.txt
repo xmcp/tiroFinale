@@ -2,3 +2,4 @@ tornado
 requests
 publicsuffix
 cherrypy
+mako

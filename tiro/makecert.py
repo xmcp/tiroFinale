@@ -39,6 +39,11 @@ def get_openssl():
     raise RuntimeError('no openssl bin')
 OBIN=get_openssl()
 
+if not os.path.exists('ssl_stuff/serial'):
+    print('ssl: initializing serial')
+    with open('ssl_stuff/serial','w') as f:
+        f.write('00\n')
+
 #from tlsmanager.py
 
 class CertManager(object):

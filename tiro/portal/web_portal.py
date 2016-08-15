@@ -69,6 +69,8 @@ conf={
 }
 
 def run():
+    cherrypy.log.error_log.propagate=False
+    cherrypy.log.access_log.propagate=False
     cherrypy.quickstart(WebPortal(),'/',conf)
 if __name__=='__main__':
     run()
