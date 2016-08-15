@@ -7,8 +7,6 @@ The server-side program (*Finale*) requires Python 3.x, and supports at least [h
 
 ![logo](http://www.madoka-magica.com/special/img/present01/icon_mami.png)
 
-[Official](http://bangumi.bilibili.com/anime/2539) Pronounciation: **踢咯，飞那里！**
-
 ## Efficiency
 
 Not using tiroFinale proxy: *LOAD: 3.02s*
@@ -42,14 +40,14 @@ Using tiroFinale proxy (v4.0.02) from localhost: *LOAD: 3.32s*
 - [x] Fix the `Content-Length` related bug
 - [x] Improve efficiency
 - [x] Add `GFWList` support
+- [ ] Use better auto-detecting mechanism to replace the outdated `GFWList`
 - [x] Use wildcard SSL certificate if possible
 - [ ] <del>Network error handling and retransmission</del> *(deprecated due to the compatibility concern)*
-- [ ] Showing statistics
-- [ ] Improve security
+- [ ] <del>Showing statistics</del> *(deprecated as it's not so useful and it will probably affect efficiency somehow)*
+- [ ] Improve security *(low priority)*
 
 ## Special thanks to:
 
 - [senko/tornado-proxy](https://github.com/senko/tornado-proxy)
 - [Leryan/python-simplecacher](https://github.com/Leryan/python-simplecacher)
 - [Leryan/genssl](https://github.com/Leryan/genssl)
-- [CaledoniaProject/GFWList](https://github.com/CaledoniaProject/GFWList)
