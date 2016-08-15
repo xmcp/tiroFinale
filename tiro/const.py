@@ -7,7 +7,7 @@ PROXY_PORT = 8848
 PORTAL_PORT = 8844
 FINALE_URL = 'http://127.0.0.1:4446/finale'
 PASSWORD = 'rdfzyjy'
-TIMEOUT = 30 # in seconds
+TIMEOUT = 15 # in seconds
 OPENSSL_BIN = None # for who prefers a custom openssl executable
 
 ## optimizations
@@ -30,8 +30,8 @@ COMPRESS_THRESHOLD = 32*1024
 # increase the threshold for better upload speed. decrease the threshold for shorter TTFB.
 
 PROXY_MODE = 2
-# 0: Completely Direct / 1: Decided by GFWList (experimental) / 2: Completely Finale
-# for mode 1, tiro will use GFWList to determine whether to use Finale proxy or make the request directly.
+# 0: Completely Direct / 1: Jaô-Shingan™ Technique  (experimental) / 2: Completely Finale
+# for mode 1, tiro will redirect websites with connection problems to the Finale server.
 
 REUSE_SESSION = True
 # tiro will reuse the requests sessions of direct requests.

@@ -24,7 +24,7 @@ class WebPortal:
 
     @cherrypy.expose()
     def index(self):
-        return template('index.html').render()
+        return template('index.html').render(filtered=finale_launcher.filtered_domains)
 
     @cherrypy.expose()
     def error(self,level,reason,traceback):
@@ -47,6 +47,12 @@ class WebPortal:
         if int(mode) not in [0,1,2]:
             return 'Error: bad proxy mode'
         const.PROXY_MODE=int(mode)
+        finale_launcher._should_go_direct.cache_clear()
+        raise cherrypy.HTTPRedirect('/')
+
+    @cherrypy.expose()
+    def clear_filtered(self):
+        finale_launcher.filtered_domains.clear()
         finale_launcher._should_go_direct.cache_clear()
         raise cherrypy.HTTPRedirect('/')
 

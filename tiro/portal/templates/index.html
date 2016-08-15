@@ -6,6 +6,21 @@
     input[type=url] {
         font-family: Consolas, monospace;
     }
+    .prpr {
+        position: fixed;
+        opacity: 0;
+        transition: opacity .25s;
+        pointer-events: none;
+        bottom: 0; right: 0;
+        height: 80%;
+    }
+    button:hover .prpr {
+        opacity: 1 !important;
+    }
+    .btn-rikka-stat {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
 </style>
 
 <div class="page-header">
@@ -45,7 +60,24 @@ ${self.draw_status(-2,direct=const.PROXY_MODE==0)}
     <span class="p">Proxy mode: </span>
     <div class="btn-group">
         <button type="submit" name="mode" value="0" class="btn btn-default ${'active' if const.PROXY_MODE==0 else ''}">Direct</button>
-        <button type="submit" name="mode" value="1" class="btn btn-default ${'active' if const.PROXY_MODE==1 else ''}">GFWList</button>
-        <button type="submit" name="mode" value="2" class="btn btn-default ${'active' if const.PROXY_MODE==2 else ''}">Finale</button>
+        <button type="submit" name="mode" value="1" class="btn btn-default ${'active' if const.PROXY_MODE==1 else ''}">
+            Rikka
+            <img class="prpr" src="/static/prpr/rikka.png">
+        </button>
+        <button type="button" class="btn btn-default btn-rikka-stat" data-toggle="dropdown"><span class="caret"></span></button>
+        <button type="submit" name="mode" value="2" class="btn btn-default ${'active' if const.PROXY_MODE==2 else ''}">
+            Finale
+            <img class="prpr" src="/static/prpr/mami.png">
+        </button>
+        <ul class="dropdown-menu">
+            <li><a href="/clear_filtered">
+                <span class="glyphicon glyphicon-trash"></span> 清空邪王真眼™缓存
+            </a></li>
+            <li class="dropdown-header">已经识别了 ${len(filtered)} 个网站</li>
+            <li class="divider"></li>
+            % for domain in filtered:
+                <li><a>${domain|h}</a></li>
+            % endfor
+        </ul>
     </div>
 </form>

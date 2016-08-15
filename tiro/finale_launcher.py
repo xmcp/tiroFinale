@@ -1,6 +1,7 @@
 #coding=utf-8
 
 import requests
+import requests.exceptions
 import urllib.parse
 from contextlib import closing
 from functools import lru_cache
@@ -10,13 +11,13 @@ import threading
 import json
 import traceback
 
-import gfwlist
 from portal import web_portal
 import const
 
 API_VERSION = 'APIv5'
 PORTAL_ROOT='http://127.0.0.1:%d' % const.PORTAL_PORT
 
+filtered_domains=set()
 s=requests.Session()
 s.trust_env=False #disable original proxy
 thread_adapter=requests.adapters.HTTPAdapter(pool_connections=const.POOLSIZE, pool_maxsize=const.POOLSIZE)
@@ -66,19 +67,23 @@ def _direct_request(method, url, headers, body):
     else:
         ss=requests.Session()
         ss.trust_env=False
-    res=ss.request(
-        method, url,
-        headers=headers, data=body,
-        stream=True, allow_redirects=False, timeout=const.TIMEOUT,
-    )
+    try:
+        res=ss.request(
+            method, url,
+            headers=headers, data=body,
+            stream=True, allow_redirects=False, timeout=const.TIMEOUT,
+        )
+    except requests.exceptions.ConnectionError:
+        if const.PROXY_MODE==1:
+            domain=urllib.parse.urlsplit(url).netloc
+            print('tiro->Rikka: Jaô Shingan launched: %s'%domain)
+            filtered_domains.add(domain)
+            _should_go_direct.cache_clear()
+            return _real_finale_request(method, url, headers, body)
+        raise
 
     print('tiro: [%d] %s'%(res.status_code,url))
     return closing(res)
-
-@lru_cache()
-def _is_domain_filtered(domain):
-    domain=domain.split('.')
-    return any((True for x in range(len(domain)) if '.'.join(domain[x:]) in gfwlist.domains))
 
 @lru_cache()
 def _should_go_direct(url):
@@ -89,7 +94,7 @@ def _should_go_direct(url):
         if const.PROXY_MODE==0 or domain.partition(':')[0]=='127.0.0.1':
             return True
         elif const.PROXY_MODE==1:
-            return not _is_domain_filtered(domain)
+            return domain not in filtered_domains
         else:
             return False
 
