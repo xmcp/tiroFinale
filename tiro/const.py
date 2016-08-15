@@ -30,7 +30,7 @@ COMPRESS_THRESHOLD = 32*1024
 # increase the threshold for better upload speed. decrease the threshold for shorter TTFB.
 
 PROXY_MODE = 2
-# 0: Completely Direct / 1: Jaô-Shingan™ Technique  (experimental) / 2: Completely Finale
+# 0: Completely Direct / 1: Jaô-Shingan™ Technique (experimental) / 2: Completely Finale
 # for mode 1, tiro will redirect websites with connection problems to the Finale server.
 
 REUSE_SESSION = True
