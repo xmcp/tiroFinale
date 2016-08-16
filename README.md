@@ -39,15 +39,22 @@ Using tiroFinale proxy (v4.0.02) from localhost: *LOAD: 3.32s*
 - [x] Add <del>GUI</del> WebUI support for `tiro`
 - [x] Fix the `Content-Length` related bug
 - [x] Improve efficiency
-- [x] Add `GFWList` support
 - [x] Use better auto-detecting mechanism (`Jaô-Shingan™`) to replace the outdated `GFWList`
 - [x] Use wildcard SSL certificate if possible
+- [x] Proxy auto-configuration on Windows
+- [ ] Restore original proxy after exit
+- [ ] Concurrent certificate signing
+- [ ] Improve security *(low priority)*
+
+## Abandoned Todo Items
+
+- [x] <del>Add `GFWList` support</del> *(replaced by `Jaô-Shingan™`)*
 - [ ] <del>Network error handling and retransmission</del> *(deprecated due to the compatibility concern)*
 - [ ] <del>Showing statistics</del> *(deprecated as it's not so useful and it will probably affect efficiency somehow)*
-- [ ] Improve security *(low priority)*
 
 ## Special thanks to:
 
 - [senko/tornado-proxy](https://github.com/senko/tornado-proxy)
 - [Leryan/python-simplecacher](https://github.com/Leryan/python-simplecacher)
 - [Leryan/genssl](https://github.com/Leryan/genssl)
+- [Mickyj's blog article](http://blogs.msmvps.com/mickyj/blog/2013/10/31/programmatically-alter-automatically-detect-settings-in-ie-through-vbs/)

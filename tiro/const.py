@@ -9,6 +9,8 @@ FINALE_URL = 'http://127.0.0.1:4446/finale'
 PASSWORD = 'rdfzyjy'
 TIMEOUT = 15 # in seconds
 OPENSSL_BIN = None # for who prefers a custom openssl executable
+SET_SYSTEM_PROXY = True # automatically proxy configuration on Windows
+SHOW_INTRO = True # automatically showing the intro page after startup
 
 ## optimizations
 # designed for advanced users. change it at your own risk.

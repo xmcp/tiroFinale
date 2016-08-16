@@ -10,10 +10,11 @@ setup(name='tiroFinale',
       version='1.0',
       description='tiroFinale HTTP Proxy',
       options={'build_exe':{
-        'optimize':2,
-        'include_files':['const.py'],
-        'excludes':'const',
-        'includes':'cherrypy.wsgiserver',
+          'optimize':2,
+          'include_files':['const.py'],
+          'excludes':'const',
+          'includes':'cherrypy.wsgiserver',
+          'include_msvcr':True,
       }},
       executables=executables)
 
