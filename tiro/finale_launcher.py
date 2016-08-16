@@ -13,6 +13,7 @@ import traceback
 
 from portal import web_portal
 import const
+from utils import normdomain
 
 API_VERSION = 'APIv5'
 PORTAL_ROOT='http://127.0.0.1:%d' % const.PORTAL_PORT
@@ -76,8 +77,8 @@ def _direct_request(method, url, headers, body):
     except requests.exceptions.ConnectionError:
         if const.PROXY_MODE==1:
             domain=urllib.parse.urlsplit(url).netloc
-            print('tiro->Rikka: Jaô Shingan launched: %s'%domain)
-            filtered_domains.add(domain)
+            print('tiro->Rikka: Jao Shingan launched: %s'%domain)
+            filtered_domains.add(normdomain(domain))
             _should_go_direct.cache_clear()
             return _real_finale_request(method, url, headers, body)
         raise
@@ -94,7 +95,7 @@ def _should_go_direct(url):
         if const.PROXY_MODE==0 or domain.partition(':')[0]=='127.0.0.1':
             return True
         elif const.PROXY_MODE==1:
-            return domain not in filtered_domains
+            return normdomain(domain) not in filtered_domains
         else:
             return False
 
