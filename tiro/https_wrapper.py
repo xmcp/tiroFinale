@@ -58,6 +58,3 @@ def create_wrapper(host):
     print('https_wrapper: wrapping %s on port %d'%(host,port))
     cache[host]=port
     return port
-
-if __name__=='__main__':
-    create_wrapper('www.t.cn')

@@ -18,8 +18,8 @@ CHUNKSIZE = 64*1024
 # a small chunksize will limit download speed; a large chunksize will increase TTFB.
 
 POOLSIZE = 128
-# tiro uses requests's connection pool mechanism.
-# improve concurrency but will consume more RAM.
+# tiro uses requests's connection pool mechanism and tornado's thread pool mechanism.
+# a bigger poolsize will improve concurrency but will consume more RAM.
 
 SSL_WILDCARD = True
 # tiro ssl module will sign wildcard ssl certificate for sub-domains.

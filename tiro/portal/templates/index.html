@@ -8,13 +8,13 @@
     }
     .prpr {
         position: fixed;
-        display: none;
         pointer-events: none;
-        bottom: 0; right: 0;
-        height: 80%;
+        bottom: -60%; right: 0;
+        transition: bottom .25s ease .15s;
+        height: 60%;
     }
     button:hover .prpr {
-        display: block;
+        bottom: 0 !important;
     }
     .btn-rikka-stat {
         padding-left: 5px;

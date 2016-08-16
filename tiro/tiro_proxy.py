@@ -4,28 +4,36 @@
 import socket
 import threading
 import webbrowser
+from concurrent.futures import ThreadPoolExecutor
 
-import tornado.httpserver
 import tornado.ioloop
 import tornado.iostream
 import tornado.web
-import tornado.httpclient
+import tornado.gen
 import tornado.httputil
+from tornado.concurrent import run_on_executor
 
 import https_wrapper
 import finale_launcher
 from portal import web_portal
 
-from const import PROXY_PORT, PORTAL_PORT
+from const import PROXY_PORT, PORTAL_PORT, POOLSIZE
 
 
 class ProxyHandler(tornado.web.RequestHandler):
     SUPPORTED_METHODS = ['GET', 'POST', 'HEAD', 'DELETE', 'PATCH', 'PUT', 'OPTIONS', 'CONNECT']
+    executor=ThreadPoolExecutor(POOLSIZE)
 
     def compute_etag(self):
         return None # disable tornado Etag
 
+    def _async(self,fn,*args,**kwargs):
+        def self_remover(_,*args,**kwargs):
+            return fn(*args,**kwargs)
+        return run_on_executor(executor='executor')(self_remover)(self,*args,**kwargs)
+
     @tornado.web.asynchronous
+    @tornado.gen.coroutine
     def get(self):
         def callback_puthead(code,reason,headers):
             self.set_status(code, reason)
@@ -34,27 +42,15 @@ class ProxyHandler(tornado.web.RequestHandler):
                 if k.lower() not in ['connection','transfer-encoding']:
                     self.add_header(k, v)
             self.flush()
-        
-        def callback_putdata(data):
-            self.write(data)
-            self.flush()
-        
-        def callback_finish():
-            self.finish()
-            
+
         body = self.request.body
         if 'Proxy-Connection' in self.request.headers:
             del self.request.headers['Proxy-Connection']
 
-        finale_launcher.tornado_fetcher(
+        yield self._async(finale_launcher.tornado_fetcher,
             ioloop,
-            callback_puthead,
-            callback_putdata,
-            callback_finish,
-            self.request.method,
-            self.request.uri,
-            self.request.headers,
-            body,
+            callback_puthead, self.write, self.finish,
+            self.request.method, self.request.uri, self.request.headers, body,
         )
 
     post=get
@@ -66,8 +62,8 @@ class ProxyHandler(tornado.web.RequestHandler):
 
     @tornado.web.asynchronous
     def connect(self):
-        host, port = self.request.uri.split(':')
-        client = self.request.connection.stream
+        host=self.request.uri.partition(':')[0]
+        client=self.request.connection.stream
 
         def client_close(data=None):
             if upstream.closed():
@@ -88,16 +84,15 @@ class ProxyHandler(tornado.web.RequestHandler):
             upstream.read_until_close(upstream_close, client.write)
             client.write(b'HTTP/1.0 200 Connection established\r\n\r\n')
 
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+        s = socket.socket()
         upstream = tornado.iostream.IOStream(s)
 
         upstream.connect(('127.0.0.1', https_wrapper.create_wrapper(host)), start_tunnel)
          
 def run_proxy():
-    app = tornado.web.Application([
+    tornado.web.Application([
         (r'.*', ProxyHandler),
-    ])
-    app.listen(PROXY_PORT)
+    ]).listen(PROXY_PORT)
     global ioloop
     ioloop = tornado.ioloop.IOLoop.instance()
     ioloop.start()

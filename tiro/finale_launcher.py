@@ -7,7 +7,6 @@ from contextlib import closing
 from functools import lru_cache
 import base64
 import zlib
-import threading
 import json
 import traceback
 
@@ -107,18 +106,12 @@ def finale_request(method, url, headers, body):
     else:
         return _real_finale_request(method, url, headers, body)
 
-def _async(f):
-    def _real(*__,**_):
-        threading.Thread(target=f,args=__,kwargs=_).start()
-    return _real
-
-@_async
 def tornado_fetcher(ioloop, puthead, putdata, finish, method, url, headers, body):
     try:
         with finale_request(method, url, headers, body) as res:
             ioloop.add_callback(puthead,res.status_code,res.reason,res.headers.items())
             for content in res.raw.stream(const.CHUNKSIZE, decode_content=False):
-                ioloop.add_callback(putdata,content) #fixme: "Tried to write more data than Content-Length"
+                ioloop.add_callback(putdata,content)
             ioloop.add_callback(finish)
     except:
         ioloop.add_callback(puthead,504,'tiroFinale Error',[('Content-Type','text/html')])
