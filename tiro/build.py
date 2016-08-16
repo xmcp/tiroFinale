@@ -13,7 +13,7 @@ setup(name='tiroFinale',
         'optimize':2,
         'include_files':['const.py'],
         'excludes':'const',
-        'includes':'cherrypy.wsgiserver.wsgiserver3',
+        'includes':'cherrypy.wsgiserver',
       }},
       executables=executables)
 

@@ -21,12 +21,6 @@
                 <text fill="#000000" x="300" y="85" font-size="20" font-family="consolas" text-anchor="middle">Wrapper</text>
                 <text fill="#000000" x="425" y="85" font-size="20" font-family="consolas" text-anchor="middle">${'(Direct)' if direct else 'Finale'}</text>
                 <text fill="#000000" x="550" y="85" font-size="20" font-family="consolas" text-anchor="middle">Internet</text>
-
-                %for ind in range(4):
-                    <text fill="#000000" x="${112.5+ind*125}" y="40" font-size="30" font-family="consolas" text-anchor="middle">
-                        ${'✓' if ind<good else '×' if ind==good else ''}
-                    </text>
-                %endfor
             </g>
         </svg>
     </div>
