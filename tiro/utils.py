@@ -1,5 +1,6 @@
 import ssl_config
 import const
+from subprocess import Popen, PIPE
 
 _psl=None
 def normdomain(domain):
@@ -13,15 +14,34 @@ def normdomain(domain):
     suf=_psl.get_public_suffix(domain)
     return domain if domain==suf else '*.%s'%suf
 
+def popen_process(cmd, shell=True):
+    p = Popen(
+        cmd,
+        shell=shell,
+        stdout=PIPE,
+        stderr=PIPE)
+    pstdout, pstderr = p.communicate()
+    pretcode = p.returncode
+    return p, pstdout, pstderr, pretcode
+
+def popen_fulloutput(output):
+    full_output = output[1].decode('gbk','ignore')
+    full_output += output[2].decode('gbk','ignore')
+    return full_output
+    
 try:
     assert const.SET_SYSTEM_PROXY
     import winreg
+
 except (ImportError,AssertionError):
     if const.SET_SYSTEM_PROXY: #then import failed
         print('utils: automatic proxy configuration failed')
     def set_proxy():
         pass
-else:
+    def install_ca():
+        pass
+
+else: # Windows-only
 
     # do not touch. that's magic. more details about motherf**king windows registry:
     # http://blogs.msmvps.com/mickyj/blog/2013/10/31/programmatically-alter-automatically-detect-settings-in-ie-through-vbs/
@@ -32,6 +52,16 @@ else:
         b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'\
         b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
 
+    def install_ca():
+        if not const.INSTALL_CA:
+            return
+        from ssl_config import ca_crt_file
+        print('utils: installing CA certificate')
+        result=popen_process('certutil -addstore root %s'%ca_crt_file)
+        if result[3]!=0:
+            print('utils: error: CA installing failed')
+            print('  CertUtil output for %s:\n%s'%(ca_crt_file,popen_fulloutput(result)))
+        
     def set_proxy():
         print('utils: setting system proxy')
         reg=winreg.ConnectRegistry(None,winreg.HKEY_CURRENT_USER)

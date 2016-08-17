@@ -1,7 +1,7 @@
 #coding=utf-8
 
-## basic settings
-# you can also change Finale settings in the web portal
+''' basic settings '''
+# you can also change Finale settings in the web portal.
 
 PROXY_PORT = 8848
 PORTAL_PORT = 8844
@@ -9,10 +9,21 @@ FINALE_URL = 'http://127.0.0.1:4446/finale'
 PASSWORD = 'rdfzyjy'
 TIMEOUT = 15 # in seconds
 OPENSSL_BIN = None # for who prefers a custom openssl executable
-SET_SYSTEM_PROXY = True # automatically proxy configuration on Windows
-SHOW_INTRO = True # automatically showing the intro page after startup
 
-## optimizations
+''' automation '''
+# set-up the environment automatically. some are Windows-only
+
+SET_SYSTEM_PROXY = True
+# set system-wide http proxy (Windows only)
+# caution: system proxy will NOT be restored after exitting.
+
+SHOW_INTRO = True
+# show intro page after startup
+
+INSTALL_CA = True
+# install root CA to system (Windows only)
+
+''' optimizations '''
 # designed for advanced users. change it at your own risk.
 
 CHUNKSIZE = 64*1024
@@ -39,7 +50,7 @@ REUSE_SESSION = True
 # tiro will reuse the requests sessions of direct requests.
 # recommended. DRAMATICALLY improve efficiency, but have potential security vulnerability.
 
-## internal arguments
+''' internal arguments '''
 # undocumented. DO NOT CHANGE unless you know exactly what your are doing.
 
 TEST_URL = 'http://example.com/not_exist/tiro_finale_test.page'

@@ -18,7 +18,7 @@ import finale_launcher
 from portal import web_portal
 
 from const import PROXY_PORT, PORTAL_PORT, POOLSIZE, SHOW_INTRO
-from utils import set_proxy
+from utils import set_proxy, install_ca
 
 
 class ProxyHandler(tornado.web.RequestHandler):
@@ -99,13 +99,15 @@ def run_proxy():
     ioloop.start()
 
 if __name__ == '__main__':
-    set_proxy()
 
-    print('portal: starting web portal on port %d'%PORTAL_PORT)
+    print('bootstrap: starting web portal on port %d'%PORTAL_PORT)
     threading.Thread(target=web_portal.run).start()
 
-    print('main: starting HTTP proxy on port %d'%PROXY_PORT)
-
+    print('bootstrap: setting-up environment')
+    install_ca()
+    set_proxy()
     if SHOW_INTRO and not webbrowser.open('http://127.0.0.1:%d/intro'%PORTAL_PORT):
-        print('portal: please visit http://127.0.0.1:%d/intro'%PORTAL_PORT)
+        print('bootstrap: please visit http://127.0.0.1:%d/intro'%PORTAL_PORT)
+
+    print('bootstrap: starting HTTP proxy on port %d'%PROXY_PORT)
     run_proxy()

@@ -6,26 +6,9 @@ import os
 
 from os.path import abspath
 from os.path import join as pathjoin
-from subprocess import Popen, PIPE
 
 import ssl_config as conf
-    
-#from utils.py
-
-def popen_process(cmd, shell=True):
-    p = Popen(
-        cmd,
-        shell=shell,
-        stdout=PIPE,
-        stderr=PIPE)
-    pstdout, pstderr = p.communicate()
-    pretcode = p.returncode
-    return p, pstdout, pstderr, pretcode
-
-def popen_fulloutput(output):
-    full_output = output[1].decode('gbk','ignore')
-    full_output += output[2].decode('gbk','ignore')
-    return full_output
+from utils import popen_process, popen_fulloutput
 
 #helpers
 
