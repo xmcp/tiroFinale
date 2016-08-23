@@ -1,6 +1,8 @@
 #coding=utf-8
 #based on https://github.com/senko/tornado-proxy
 
+print('bootstrap: loading third-party libraries')
+
 import socket
 import threading
 import webbrowser
@@ -12,6 +14,8 @@ import tornado.web
 import tornado.gen
 import tornado.httputil
 from tornado.concurrent import run_on_executor
+
+print('bootstrap: loading components')
 
 import https_wrapper
 import finale_launcher
@@ -96,6 +100,7 @@ def run_proxy():
     ]).listen(PROXY_PORT)
     global ioloop
     ioloop = tornado.ioloop.IOLoop.instance()
+    print('='*30,' tiro started up ','='*30)
     ioloop.start()
 
 if __name__ == '__main__':

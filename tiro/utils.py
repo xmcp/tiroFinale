@@ -1,6 +1,8 @@
 import ssl_config
 import const
 from subprocess import Popen, PIPE
+import zlib
+from adblockparser import AdblockRules
 
 _psl=None
 def normdomain(domain):
@@ -28,7 +30,29 @@ def popen_fulloutput(output):
     full_output = output[1].decode('gbk','ignore')
     full_output += output[2].decode('gbk','ignore')
     return full_output
-    
+
+gfwlist_loaded=False
+def load_gfwlist():
+    global gfwlist_loaded
+    with open('gfwlist.txt.gzipped','rb') as f:
+        rules=zlib.decompress(f.read()).decode().split('\n')
+    print('utils: loading GFWList rule')
+    if const.USE_GFWLIST_ANYWAY:
+        filt=AdblockRules(rules)
+        if not filt.uses_re2:
+            print('utils: warning: GFWList is not using re2. THE EFFICIENCY IS NOT GUARANTEED!')
+        gfwlist_loaded=True
+        return filt.should_block
+    else:
+        try:
+            filt=AdblockRules(rules,use_re2=True,max_mem=const.RE2_MAX_MEM)
+        except ImportError:
+            print('utils: warning: GFWList is disabled unless you have pyre2 installed')
+            return lambda _:False
+        else:
+            gfwlist_loaded=True
+            return filt.should_block
+        
 try:
     assert const.SET_SYSTEM_PROXY
     import winreg

@@ -11,7 +11,7 @@ setup(name='tiroFinale',
       description='tiroFinale HTTP Proxy',
       options={'build_exe':{
           'optimize':2,
-          'include_files':['const.py'],
+          'include_files':['const.py','gfwlist.txt.gzipped'],
           'excludes':'const',
           'includes':'cherrypy.wsgiserver',
           'include_msvcr':True,

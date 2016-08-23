@@ -39,7 +39,8 @@ Using tiroFinale proxy (v4.0.02) from localhost: *LOAD: 3.32s*
 - [x] Add <del>GUI</del> WebUI support for `tiro`
 - [x] Fix the `Content-Length` related bug
 - [x] Improve efficiency
-- [x] Use better auto-detecting mechanism (`Jaô-Shingan™`) to replace the outdated `GFWList`
+- [x] Add `GFWList` support
+- [x] Implement auto-detecting mechanism (`Jaô-Shingan™`) as a backup of `GFWList`
 - [x] Use wildcard SSL certificate if possible
 - [x] Proxy auto-configuration on Windows
 - [ ] Restore original proxy after exit
@@ -48,7 +49,6 @@ Using tiroFinale proxy (v4.0.02) from localhost: *LOAD: 3.32s*
 
 ## Abandoned Todo Items
 
-- [x] <del>Add `GFWList` support</del> *(replaced by `Jaô-Shingan™`)*
 - [ ] <del>Network error handling and retransmission</del> *(deprecated due to the compatibility concern)*
 - [ ] <del>Showing statistics</del> *(deprecated as it's not so useful and it will probably affect efficiency somehow)*
 

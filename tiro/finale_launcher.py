@@ -12,11 +12,12 @@ import traceback
 
 from portal import web_portal
 import const
-from utils import normdomain
+from utils import normdomain, load_gfwlist
 
 API_VERSION = 'APIv5'
 PORTAL_ROOT='http://127.0.0.1:%d' % const.PORTAL_PORT
 
+gfwlist=load_gfwlist()
 filtered_domains=set()
 s=requests.Session()
 s.trust_env=False #disable original proxy
@@ -41,7 +42,7 @@ def _real_finale_request(method, url, headers, body):
         params={'api':API_VERSION},
         json=[True,base64.b85encode(zlib.compress(dumped.encode())).decode()]\
             if const.COMPRESS_THRESHOLD and len(dumped) >= const.COMPRESS_THRESHOLD else [False, data],
-        stream=True, allow_redirects=False, timeout=const.TIMEOUT,
+        stream=True, allow_redirects=False, timeout=const.TIMEOUT, verify=False,
     )
 
     if 'X-Finale-Status' in res.headers:
@@ -71,7 +72,7 @@ def _direct_request(method, url, headers, body):
         res=ss.request(
             method, url,
             headers=headers, data=body,
-            stream=True, allow_redirects=False, timeout=const.TIMEOUT,
+            stream=True, allow_redirects=False, timeout=const.TIMEOUT, verify=False,
         )
     except requests.exceptions.ConnectionError:
         if const.PROXY_MODE==1:
@@ -94,7 +95,7 @@ def _should_go_direct(url):
         if const.PROXY_MODE==0 or domain.partition(':')[0]=='127.0.0.1':
             return True
         elif const.PROXY_MODE==1:
-            return normdomain(domain) not in filtered_domains
+            return normdomain(domain) not in filtered_domains and not gfwlist(url)
         else:
             return False
 

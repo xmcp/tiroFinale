@@ -43,8 +43,8 @@ COMPRESS_THRESHOLD = 32*1024
 # increase the threshold for better upload speed. decrease the threshold for shorter TTFB.
 
 PROXY_MODE = 2
-# 0: Completely Direct / 1: Jaô-Shingan™ Technique (experimental) / 2: Completely Finale
-# for mode 1, tiro will redirect websites with connection problems to the Finale server.
+# 0: Completely Direct / 1: Auto Detect / 2: Completely Finale
+# for mode 1, tiro will redirect websites in GFWList or with connection problems to Finale server.
 
 REUSE_SESSION = True
 # tiro will reuse the requests sessions of direct requests.
@@ -53,5 +53,7 @@ REUSE_SESSION = True
 ''' internal arguments '''
 # undocumented. DO NOT CHANGE unless you know exactly what your are doing.
 
+USE_GFWLIST_ANYWAY = False
+RE2_MAX_MEM = 64*1024*1024
 TEST_URL = 'http://example.com/not_exist/tiro_finale_test.page'
 PORTAL_CALLBACK = '___callback_tf_proxy_running'

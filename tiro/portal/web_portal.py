@@ -6,6 +6,7 @@ import os
 
 import finale_launcher
 import const
+import utils
 
 _lookup=TemplateLookup('portal/templates',input_encoding='utf-8',output_encoding='utf-8')
 def template(name):
@@ -24,7 +25,7 @@ class WebPortal:
 
     @cherrypy.expose()
     def index(self):
-        return template('index.html').render(filtered=finale_launcher.filtered_domains)
+        return template('index.html').render(filtered=finale_launcher.filtered_domains,gfwlist=utils.gfwlist_loaded)
 
     @cherrypy.expose()
     def error(self,level,reason,traceback):
