@@ -7,7 +7,7 @@ PROXY_PORT = 8848
 PORTAL_PORT = 8844
 FINALE_URL = 'http://127.0.0.1:4446/finale'
 PASSWORD = 'rdfzyjy'
-TIMEOUT = 15 # in seconds
+TIMEOUT = 10 # connection timeout, in seconds
 OPENSSL_BIN = None # for who prefers a custom openssl executable
 
 ''' automation '''
@@ -57,3 +57,5 @@ USE_GFWLIST_ANYWAY = False
 RE2_MAX_MEM = 64*1024*1024
 TEST_URL = 'http://example.com/not_exist/tiro_finale_test.page'
 PORTAL_CALLBACK = '___callback_tf_proxy_running'
+MAX_REQ_BODY = 1024*1024*1024
+FIRST_BYTE_TIMEOUT = 300

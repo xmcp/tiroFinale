@@ -21,7 +21,7 @@ import https_wrapper
 import finale_launcher
 from portal import web_portal
 
-from const import PROXY_PORT, PORTAL_PORT, POOLSIZE, SHOW_INTRO
+from const import PROXY_PORT, PORTAL_PORT, POOLSIZE, SHOW_INTRO, MAX_REQ_BODY
 from utils import set_proxy, install_ca
 
 
@@ -97,7 +97,7 @@ class ProxyHandler(tornado.web.RequestHandler):
 def run_proxy():
     tornado.web.Application([
         (r'.*', ProxyHandler),
-    ]).listen(PROXY_PORT)
+    ]).listen(PROXY_PORT,max_body_size=MAX_REQ_BODY)
     global ioloop
     ioloop = tornado.ioloop.IOLoop.instance()
     print('='*30,' tiro started up ','='*30)

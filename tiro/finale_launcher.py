@@ -17,6 +17,8 @@ from utils import normdomain, load_gfwlist
 API_VERSION = 'APIv5'
 PORTAL_ROOT='http://127.0.0.1:%d' % const.PORTAL_PORT
 
+requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)
+
 gfwlist=load_gfwlist()
 filtered_domains=set()
 s=requests.Session()
@@ -42,7 +44,8 @@ def _real_finale_request(method, url, headers, body):
         params={'api':API_VERSION},
         json=[True,base64.b85encode(zlib.compress(dumped.encode())).decode()]\
             if const.COMPRESS_THRESHOLD and len(dumped) >= const.COMPRESS_THRESHOLD else [False, data],
-        stream=True, allow_redirects=False, timeout=const.TIMEOUT, verify=False,
+        timeout=(const.TIMEOUT, const.FIRST_BYTE_TIMEOUT),
+        stream=True, allow_redirects=False, verify=False,
     )
 
     if 'X-Finale-Status' in res.headers:
@@ -72,7 +75,8 @@ def _direct_request(method, url, headers, body):
         res=ss.request(
             method, url,
             headers=headers, data=body,
-            stream=True, allow_redirects=False, timeout=const.TIMEOUT, verify=False,
+            timeout=(const.TIMEOUT, const.FIRST_BYTE_TIMEOUT),
+            stream=True, allow_redirects=False, verify=False,
         )
     except requests.exceptions.ConnectionError:
         if const.PROXY_MODE==1:

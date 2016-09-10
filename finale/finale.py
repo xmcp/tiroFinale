@@ -14,6 +14,7 @@ CHUNKSIZE=64*1024
 PASSWORD='rdfzyjy'
 API_VERSION='APIv5'
 POOLSIZE=100
+FIRST_BYTE_TIMEOUT=300
 
 class Website:
     def __init__(self):
@@ -60,7 +61,7 @@ class Website:
                 data=base64.b64decode(data['data'].encode()),
                 stream=True,
                 allow_redirects=False,
-                timeout=data['timeout'],
+                timeout=(data['timeout'],FIRST_BYTE_TIMEOUT),
                 verify=False,
             )
         except:
@@ -92,6 +93,8 @@ cherrypy.quickstart(Website(),'/',{
         'tools.response_headers.on':True,
         'engine.autoreload.on':False,
         'server.thread_pool': 25,
+        'server.max_request_body_size': 0, #no limit
+        'response.timeout': 900,
     },
     '/finale': {
         'response.stream': True
