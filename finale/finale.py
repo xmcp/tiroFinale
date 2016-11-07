@@ -11,7 +11,7 @@ requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.
 
 PORT=int(os.environ.get('PORT',4446))
 CHUNKSIZE=64*1024
-PASSWORD='rdfzyjy'
+PASSWORD=os.environ.get('FINALE_PASSWORD','rdfzyjy')
 API_VERSION='APIv5'
 POOLSIZE=100
 FIRST_BYTE_TIMEOUT=300
@@ -100,4 +100,3 @@ cherrypy.quickstart(Website(),'/',{
         'response.stream': True
     }
 })
-
