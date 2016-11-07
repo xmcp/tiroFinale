@@ -23,6 +23,8 @@ gfwlist=load_gfwlist()
 filtered_domains=set()
 s=requests.Session()
 s.trust_env=False #disable original proxy
+s.proxies = const.PROXY_OVER_PROXIES or {}
+
 thread_adapter=requests.adapters.HTTPAdapter(pool_connections=const.POOLSIZE, pool_maxsize=const.POOLSIZE)
 s.mount('http://',thread_adapter)
 s.mount('https://',thread_adapter)
@@ -59,7 +61,7 @@ def _real_finale_request(method, url, headers, body):
             'reason': 'Finale server returns HTTP %d %s.'%(res.status_code,res.reason),
             'traceback': b''.join(res.iter_content()).decode('utf-8','ignore')
         }))
-        
+
     print('tiro: [%d] %s'%(res.status_code,url))
     return closing(res)
 
@@ -71,6 +73,7 @@ def _direct_request(method, url, headers, body):
     else:
         ss=requests.Session()
         ss.trust_env=False
+        ss.proxies = const.PROXY_OVER_PROXIES or {}
     try:
         res=ss.request(
             method, url,
