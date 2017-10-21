@@ -14,7 +14,7 @@ OPENSSL_BIN = None # for who prefers a custom openssl executable
 # these setting control the nested proxies
 
 PROXY_OVER_PROXIES = {
-    # 'http': 'http://172.16.16.61:80',
+    #'http': '127.0.0.1:8888',
 }
 
 ''' automation '''

@@ -44,7 +44,10 @@ class ProxyHandler(tornado.web.RequestHandler):
             self.set_status(code, reason)
             self._headers = tornado.httputil.HTTPHeaders()
             for k,v in headers:
-                if k.lower() not in ['connection','transfer-encoding']:
+                if k=='Set-Cookie':
+                    for item in v.split(','):
+                        self.add_header('Set-Cookie',item)
+                elif k not in ['Connection','Transfer-Encoding']:
                     self.add_header(k, v)
             self.flush()
 

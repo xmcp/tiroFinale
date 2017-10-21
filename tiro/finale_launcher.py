@@ -137,7 +137,10 @@ def base_fetcher(responder, method, url, headers, body):
         with finale_request(method, url, headers, body) as res:
             responder.send_response(res.status_code, res.reason)
             for k,v in res.headers.items():
-                if k not in ['Connection','Transfer-Encoding']:
+                if k=='Set-Cookie':
+                    for item in v.split(','):
+                        responder.send_header('Set-Cookie',item)
+                elif k not in ['Connection','Transfer-Encoding']:
                     responder.send_header(k, v)
             responder.end_headers()
             for content in res.raw.stream(const.CHUNKSIZE, decode_content=False):
