@@ -45,7 +45,7 @@ SSL_WILDCARD = True
 # tiro ssl module will sign wildcard ssl certificate for sub-domains.
 # turn on for better efficiency. turn off if you encounter ssl certificate errors.
 
-COMPRESS_THRESHOLD = 32*1024
+COMPRESS_THRESHOLD = 16*1024
 # tiro uses gzip to compress large Finale request data.
 # increase the threshold for better upload speed. decrease the threshold for shorter TTFB.
 

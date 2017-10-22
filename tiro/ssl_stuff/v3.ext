@@ -1,0 +1,4 @@
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = keyEncipherment, dataEncipherment
+extendedKeyUsage = serverAuth

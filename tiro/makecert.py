@@ -26,20 +26,21 @@ if not os.path.exists('ssl_stuff/serial'):
     print('ssl: initializing serial')
     with open('ssl_stuff/serial','w') as f:
         f.write('00\n')
+        
+with open(conf.ca_openssl_config) as f:
+    TEMPLATE=f.read()
 
 #from tlsmanager.py
 
 class CertManager(object):
-    OPENSSL_NEWKEY_FORMAT = '{4} req  -new -config {0} -keyform PEM -keyout {1} -outform PEM -out {2} -nodes -newkey 1024 -subj {3}'
-    OPENSSL_CASIGN_FORMAT = '{6} x509 -CA {0} -CAkey {1} -CAserial {2} -req -sha256 -in {3} -outform PEM -out {4} -days {5}'
-    OPENSSL_SUBJECT_FORMAT = '"/C={0}/ST={1}/L={2}/O={3}/OU={4}/CN={5}/emailAddress={6}/subjectAltName=DNS.1={5}"'
+    OPENSSL_NEWKEY_FORMAT = '{OBIN} req  -new -config {CONFIG} -keyform PEM -keyout {KEYOUT} -outform PEM -out {OUT} -nodes -newkey 1024'
+    OPENSSL_CASIGN_FORMAT = '{OBIN} x509 -CA {0} -CAkey {1} -CAserial {2} -req -sha256 -in {3} -outform PEM -out {4} -days {5} -extensions v3_req -extfile {CONFIG}'
 
     def __init__(self, *args, **kwargs):
         self.key_dir = self.normpath(conf.key_dir)
         self.ca_key = self.normpath(conf.ca_key_file)
         self.ca_crt = self.normpath(conf.ca_crt_file)
         self.ca_ser = self.normpath(conf.ca_serial_file)
-        self.ca_cnf = self.normpath(conf.ca_openssl_config)
         self.obin = OBIN
         self.validity_days = int(conf.validity_days)
 
@@ -79,21 +80,14 @@ class CertManager(object):
             self.cleanup(domain)
 
         print('ssl: generating new cert for {0}'.format(domain))
-        ssl_subj = self.OPENSSL_SUBJECT_FORMAT.format(
-            conf.subj_country,
-            conf.subj_state,
-            conf.subj_locality,
-            conf.subj_organization,
-            conf.subj_ounit,
-            domain,
-            conf.subj_email,
-        )
+        CONFIG_FILE='_generated_keys/%s.cnf'%fdomain
+        with open(CONFIG_FILE,'w') as f:
+            f.write(TEMPLATE.replace('{{domain}}',domain))
         cmd_key = self.OPENSSL_NEWKEY_FORMAT.format(
-            self.ca_cnf,
-            ssl_key,
-            ssl_csr,
-            ssl_subj,
-            self.obin,
+            CONFIG=CONFIG_FILE,
+            KEYOUT=ssl_key,
+            OUT=ssl_csr,
+            OBIN=self.obin,
         )
         ssl_log_key = popen_process(cmd_key)
         cmd_cert = self.OPENSSL_CASIGN_FORMAT.format(
@@ -103,7 +97,8 @@ class CertManager(object):
             ssl_csr,
             ssl_cert,
             self.validity_days,
-            self.obin,
+            OBIN=self.obin,
+            CONFIG=CONFIG_FILE,
         )
         ssl_log_cert = popen_process(cmd_cert)
 
@@ -139,3 +134,6 @@ class CertManager(object):
             pass
         finally:
             self.prepare()
+            
+if __name__=='__main__':
+    CertManager().generate('example.com')
